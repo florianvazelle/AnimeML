@@ -10,12 +10,12 @@
 
 extern "C" {
     #ifdef WIN32
-    __declspec(dllimport)
+    __declspec(dllexport)
     #endif
     int GetRandom() { return rand(); };
 
     #ifdef WIN32
-    __declspec(dllimport)
+    __declspec(dllexport)
     #endif
     int pre_alloc_test(double* ppdoubleArrayReceiver) {
         size_t stSize = sizeof(double) * (3 * 5);
@@ -33,7 +33,7 @@ extern "C" {
     }
 
     #ifdef WIN32
-    __declspec(dllimport)
+    __declspec(dllexport)
     #endif
     int alloc_in_test(double* ppdoubleArrayReceiver) {
         size_t stSize = sizeof(double) * (3 * 5);
@@ -52,12 +52,12 @@ extern "C" {
     }
 
     #ifdef WIN32
-    __declspec(dllimport)
+    __declspec(dllexport)
     #endif
     void my_free(double* ppdoubleArrayReceiver) { delete[] ppdoubleArrayReceiver; }
 
     #ifdef WIN32
-    __declspec(dllimport)
+    __declspec(dllexport)
     #endif
     void write() {
         std::ofstream outfile("test.txt");

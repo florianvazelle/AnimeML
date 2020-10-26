@@ -1,0 +1,1 @@
+Move-Item -Path ".\cpp\out\build\x64-Debug (par défaut)\example.dll" -Destination ".\unity\Assets\Plugins\Win\x86_64\example.dll"
