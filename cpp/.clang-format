@@ -1,0 +1,18 @@
+---
+  BasedOnStyle: Google
+  AccessModifierOffset: '-2'
+  AlignTrailingComments: 'true'
+  AllowAllParametersOfDeclarationOnNextLine: 'false'
+  AlwaysBreakTemplateDeclarations: 'No'
+  BreakBeforeBraces: Attach
+  ColumnLimit: '150'
+  ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
+  IncludeBlocks: Preserve
+  IndentPPDirectives: AfterHash
+  DerivePointerAlignment: false
+  PointerAlignment: Left
+  AlignConsecutiveMacros: true
+  IndentWidth: 4
+  NamespaceIndentation: All
+  BreakBeforeBinaryOperators: All
+  BreakBeforeTernaryOperators: 'true'
