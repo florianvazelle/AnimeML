@@ -8,6 +8,14 @@
 #include <fstream>
 #include <iostream>
 
+
+// Activation function and its derivative
+double sigmoid(double x) { return 1 / (1 + exp(-x)); }
+double dSigmoid(double x) { return x * (1 - x); }
+
+// Init all weights and biases between 0.0 and 1.0
+double init_weight() { return ((double)rand()) / ((double)RAND_MAX); }
+
 extern "C" {
     #ifdef WIN32
     __declspec(dllexport)
@@ -63,5 +71,28 @@ extern "C" {
         std::ofstream outfile("test.txt");
         outfile << "my text here!" << std::endl;
         outfile.close();
+    }
+
+    // end of test functions
+
+    // Neural network functions
+    #ifdef WIN32
+    __declspec(dllexport)
+    #endif
+    // return an array of weights depending on inputs count
+    double* create_linear_model(int inputs_count) {
+        auto weights = new double[inputs_count + 1];
+        for (auto i = 0; i < inputs_count + 1; i++) {
+            weights[i] = init_weight();  // rand() / (double)RAND_MAX * 2.0 - 1.0;
+        }
+
+        return weights;
+    }
+
+    #ifdef WIN32
+        __declspec(dllexport)
+    #endif  
+    void delete_linear_model(double* model) {
+        delete[] model;
     }
 }
