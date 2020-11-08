@@ -90,6 +90,16 @@ extern "C" {
     }
 
     #ifdef WIN32
+    __declspec(dllexport)
+    #endif
+    void train_linear_model_rosenblatt(double* model, double all_inputs[], int inputs_count, int sample_count,
+                                                             double all_expected_outputs[], int expected_output_size, int epochs,
+                                                             double learning_rate) {
+        // TODO
+        return;
+    }
+
+    #ifdef WIN32
         __declspec(dllexport)
     #endif  
     void delete_linear_model(double* model) {
