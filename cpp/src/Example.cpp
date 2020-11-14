@@ -194,7 +194,7 @@ extern "C" {
                             0.5f,
                             setOutputs[0],  // one output
                             activation,
-                            setInputs[k]);
+                            setInputs[l]);
                     }
                 }
             }
