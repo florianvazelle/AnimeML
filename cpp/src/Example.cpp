@@ -224,6 +224,7 @@ extern "C" {
 
             return activation;
         }
+        return 0;
     }
 
     dllexport void delete_linear_model(double* model) {
