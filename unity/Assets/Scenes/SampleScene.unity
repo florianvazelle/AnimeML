@@ -382,8 +382,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94064721d28263b44ba8099f3397c2e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  output:
+  inputs:
   - 1
-  - -1
-  - -1
-  epochs: 1
+  - 1
+  - 2
+  - 3
+  - 3
+  - 3
+  outputs:
+  - 1
+  - 0
+  - 1
+  epochs: 10000
+  learningRate: 0.5
