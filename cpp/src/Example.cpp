@@ -9,6 +9,46 @@
 #include <fstream>
 #include <iostream>
 
+#ifdef WIN32
+#define dllexport __declspec(dllexport)
+#else
+#define dllexport
+#endif
+
+/**
+ * Classes
+ */
+
+class BaseModel {
+    double* data;
+    
+    public:             
+        virtual void print() = 0;
+};
+
+class LinearModel : public BaseModel {
+    private:
+        std::string msg = "Linear";
+
+    public:
+        void print() {
+            std::ofstream outfile("Linear.txt");
+            outfile << msg << std::endl;
+            outfile.close();
+        }
+};
+
+class MLP : public BaseModel {
+    private:
+        std::string msg = "MLP";
+
+    public:
+        void print() {
+            std::ofstream outfile("MLP.txt");
+            outfile << msg << std::endl;
+            outfile.close();
+        }
+};
 
 // Activation function and its derivative
 double sigmoid(double x) { return 1 / (1 + exp(-x)); }
@@ -34,70 +74,42 @@ double updateWeight(double oldWeight, float learningRate, double targetValue, do
 }
 
 extern "C" {
-    #ifdef WIN32
-    __declspec(dllexport)
-    #endif
-    int GetRandom() { return rand(); };
-
-    #ifdef WIN32
-    __declspec(dllexport)
-    #endif
-    int pre_alloc_test(double* ppdoubleArrayReceiver) {
-        size_t stSize = sizeof(double) * (3 * 5);
-        double doubleArray[3][5];
-        
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 5; j++) {
-                doubleArray[i][j] = i * 10 + j;
-            }
+    // Allow to create a model pointer
+    dllexport BaseModel* CreateModel(int flag) { 
+        switch(flag) {
+            case 0:
+                return new LinearModel{};
+            case 1: 
+                return new MLP{};
         }
+        throw("Not a valid flag!");
+    };
 
-        memcpy(ppdoubleArrayReceiver, doubleArray, stSize);
-        
-        return 0;
-    }
-
-    #ifdef WIN32
-    __declspec(dllexport)
-    #endif
-    int alloc_in_test(double* ppdoubleArrayReceiver) {
-        size_t stSize = sizeof(double) * (3 * 5);
-        double doubleArray[3][5];
-        
-        ppdoubleArrayReceiver = new double[(3 * 5)];
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 5; j++) {
-                doubleArray[i][j] = i * 10 + j;
-            }
+    // Example usage of call a BaseModel function
+    dllexport void Print(BaseModel* model, int flag) { 
+        switch(flag) {
+            case 0: {
+                    LinearModel* l = static_cast<LinearModel*>(model);
+                    l->print();
+                } break;
+            case 1: { 
+                    MLP* m = static_cast<MLP*>(model);
+                    m->print();
+                } break;
         }
+    };
 
-        memcpy(ppdoubleArrayReceiver, doubleArray, stSize);
-
-        return 3 * 5;
-    }
-
-    #ifdef WIN32
-    __declspec(dllexport)
-    #endif
-    void my_free(double* ppdoubleArrayReceiver) { delete[] ppdoubleArrayReceiver; }
-
-    #ifdef WIN32
-    __declspec(dllexport)
-    #endif
-    void write() {
-        std::ofstream outfile("test.txt");
-        outfile << "my text here!" << std::endl;
-        outfile.close();
-    }
+    // Allow to delete model pointer to avoid leak
+    dllexport void DeleteModel(BaseModel* model) { delete model; };
 
     // end of test functions
 
-    // Neural network functions
-    #ifdef WIN32
-    __declspec(dllexport)
-    #endif
+    /**
+     * Neural network functions
+     */
+
     // return an array of weights depending on inputs count
-    double* create_linear_model(int weights_count) {
+    dllexport double* create_linear_model(int weights_count) {
         auto weights = new double[weights_count + 1];
         for (auto i = 0; i < weights_count + 1; i++) {
             weights[i] = init_weight();  // rand() / (double)RAND_MAX * 2.0 - 1.0;
@@ -106,19 +118,13 @@ extern "C" {
         return weights;
     }
 
-    #ifdef WIN32
-    __declspec(dllexport)
-    #endif
-    void train_linear_model_rosenblatt(double* model, double all_inputs[], int inputs_count, int sample_count,
+    dllexport void train_linear_model_rosenblatt(double* model, double all_inputs[], int inputs_count, int sample_count,
                                                              double all_expected_outputs[], int expected_output_size, int epochs,
                                                              double learning_rate) {
         // TODO
     }
 
-    #ifdef WIN32
-    __declspec(dllexport)
-    #endif
-    void train_linear_model_rosenblatt_test(
+    dllexport void train_linear_model_rosenblatt_test(
         double* weights,
         const int weights_count,
         const int sample_count_size,
@@ -195,10 +201,7 @@ extern "C" {
         }
     }
 
-    #ifdef WIN32
-    __declspec(dllexport)
-    #endif
-    double predict_linear_model_rosenblatt_test(
+    dllexport double predict_linear_model_rosenblatt_test(
         double weights[],
         double setInputs[],
         double setOutputs[], 
@@ -223,10 +226,7 @@ extern "C" {
         }
     }
 
-    #ifdef WIN32
-        __declspec(dllexport)
-    #endif  
-    void delete_linear_model(double* model) {
+    dllexport void delete_linear_model(double* model) {
         delete[] model;
     }
 }

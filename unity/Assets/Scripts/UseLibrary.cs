@@ -8,61 +8,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// Needs to match the c++ order
+enum Flag { LinearModel, MLP };
+
 public class UseLibrary : MonoBehaviour
 {
+    [DllImport("example")]
+    internal static extern IntPtr CreateModel(int flag);
+
+    [DllImport("example")]
+    internal static extern void Print(IntPtr model, int flag);
+
+    [DllImport("example")]
+    internal static extern void DeleteModel(IntPtr model);
+
     void Start()
     {
-        int random = TestCSharpLibrary.LoadLibrary.GetRandom();
-        Debug.Log(random);
-
-        // TestCSharpLibrary.LoadLibrary.write();
-        // ReadFile("test.txt");
-
-        PreAllocTest(); // work
-        AllocInTest();  // don't work
-    }
-
-    static void PreAllocTest()
-    {   
-        int size = 3 * 5;
-        IntPtr pManagedArray = Marshal.AllocHGlobal(3 * 5 * sizeof(double));
-
-        // Call test()
-        TestCSharpLibrary.LoadLibrary.pre_alloc_test(pManagedArray);
-        
-        // Read IntPtr
-        double[] managedArray = new double[size];
-        Marshal.Copy(pManagedArray, managedArray, 0, size);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 5; j++) {
-                Debug.Log(managedArray[i * 5 + j]);
-            }
-        }
-
-        // Free the managed memory
-        Marshal.FreeHGlobal(pManagedArray);
-        pManagedArray = IntPtr.Zero;
-    }
-
-    static void AllocInTest()
-    {
-        IntPtr pUnmanagedArray = IntPtr.Zero;
-
-        // Call test()
-        int size = TestCSharpLibrary.LoadLibrary.alloc_in_test(pUnmanagedArray);
-        
-         // Read IntPtr
-        double[] managedArray = new double[size];
-        Marshal.Copy(pUnmanagedArray, managedArray, 0, size);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 5; j++) {
-                Debug.Log(managedArray[i * 5 + j]);
-            }
-        }
-
-        // Free the unmanaged memory
-        TestCSharpLibrary.LoadLibrary.my_free(pUnmanagedArray);
-        pUnmanagedArray = IntPtr.Zero;
+        IntPtr model = CreateModel((int)Flag.LinearModel);
+        Print(model, (int)Flag.LinearModel);
+        ReadFile("Linear.txt");
+        DeleteModel(model);
     }
 
     void ReadFile(String file) {
