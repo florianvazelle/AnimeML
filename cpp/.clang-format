@@ -16,3 +16,6 @@
   NamespaceIndentation: All
   BreakBeforeBinaryOperators: All
   BreakBeforeTernaryOperators: 'true'
+  BreakBeforeBraces: Custom
+  BraceWrapping:
+    AfterExternBlock: 'true'
