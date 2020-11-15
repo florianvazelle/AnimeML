@@ -27,7 +27,8 @@ extern "C"
     };
 
     /**
-     * Train a model with inputs and outputs
+     * Train the neural network model through a process of trial and error.
+     * Adjusting the weights each time.
      *
      * @param model Is the pointer to the model
      * @param sample_count Is the number of training input

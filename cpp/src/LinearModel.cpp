@@ -11,21 +11,17 @@ LinearModel::LinearModel(int weights_count) : BaseModel(weights_count) {
     weights = new double[weights_count];
     // Init all weights and biases between 0.0 and 1.0
     for (int i = 0; i < weights_count; i++) {
-        weights[i] = ((double)rand()) / ((double)RAND_MAX) * 2.0 - 1.0;
+        weights[i] = 2 * (((double)rand()) / ((double)RAND_MAX)) - 1.0;
         // rand() / (double)RAND_MAX * 2.0 - 1.0;
     }
 }
 
 void LinearModel::train(int sample_count, double* train_inputs, int inputs_size, double* train_outputs, int outputs_size, int epochs,
                         double learning_rate) {
-    inputs_size = 2;
-    outputs_size = 1;
-    learning_rate = 0.5;
-
     std::vector<int> trainingSetOrder(sample_count);
 
-    for (int j = 0; j < trainingSetOrder.size(); j++) {
-        trainingSetOrder[j] = j;
+    for (int i = 0; i < trainingSetOrder.size(); i++) {
+        trainingSetOrder[i] = i;
     }
 
     // Iterate with epochs
@@ -71,7 +67,7 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
 
             // *** Learn Function ***
 
-            // backpropagation of error on weights
+            // Backpropagation of error on weights / Adjust the weights
             for (int k = 0; k < outputs_size; k++) {  // One unique output
                 for (int l = 0; l < inputs_size; l++) {
                     weights[l] = _update_weight(weights[l], learning_rate, setOutputs[k], activation[k], setInputs[l]);

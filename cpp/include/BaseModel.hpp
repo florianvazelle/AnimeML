@@ -20,8 +20,14 @@ class BaseModel {
     double* weights;
     int weights_count;
 
-    // Activation function and its derivative
+    // The Sigmoid function, which describes an S shaped curve.
+    // We pass the weighted sum of the inputs through this function to
+    // normalise them between 0 and 1.
     inline double _sigmoid(double x) const { return 1 / (1 + exp(-x)); }
+
+    // The derivative of the Sigmoid function.
+    // This is the gradient of the Sigmoid curve.
+    // It indicates how confident we are about the existing weight
     inline double _sigmoid_derivative(double x) const { return x * (1 - x); }
 
     void debuglog(std::string msg) {
