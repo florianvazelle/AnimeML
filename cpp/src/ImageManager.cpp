@@ -1,18 +1,15 @@
-#include <AssetManager.hpp>
+#include <ImageManager.hpp>
 
-#include <cassert>
+#include <Image.hpp>
+
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
-#include <string>
-#include <vector>
-
-#include <Image.hpp>
 
 namespace fs = std::filesystem;  // g++ -v >= 9
 
 /* Retourne la liste de chemin contenu dans le repertoire passer en parametre */
-void AssetManager::getFilesInDirectory(std::vector<std::string>& out, const std::string& directory) {
+void ImageManager::getFilesInDirectory(std::vector<std::string>& out, const std::string& directory) {
     for (const fs::directory_entry& p : fs::directory_iterator(directory)) {
         fs::path path = p.path();
         fs::path ext = path.extension();
@@ -27,7 +24,7 @@ void AssetManager::getFilesInDirectory(std::vector<std::string>& out, const std:
     }
 }
 
-void AssetManager::loadAsset(std::vector<double>& input_images, std::vector<double>& outputs) const {
+void ImageManager::loadAsset(std::vector<double>& input_images, std::vector<double>& outputs) const {
     // load all anime path
     std::vector<std::string> anime_images_path;
     getFilesInDirectory(anime_images_path, DATA_PATH "/Anime");
