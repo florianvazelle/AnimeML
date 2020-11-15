@@ -21,3 +21,7 @@ Move this library to the corresponding folder in VoronoiUnity :
 ## Requirements
 
 - [cmake](https://cmake.org/) (>= 3.8)
+
+## Reference
+
+- Dataset for test : [standard-machine-learning-datasets](https://machinelearningmastery.com/standard-machine-learning-datasets/)
