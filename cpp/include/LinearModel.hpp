@@ -12,7 +12,7 @@ class LinearModel : virtual public BaseModel {
 
   private:
     void _shuffle(std::vector<int>& array) const;
-    double _update_weight(double old_weight, float learning_rate, double target_value, double actual_value, double entry_value) const;
+    double _update_weight(double old_weight, double learning_rate, double target_value, double actual_value, double entry_value) const;
 };
 
 #endif

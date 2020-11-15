@@ -11,9 +11,8 @@ LinearModel::LinearModel(int weights_count) : BaseModel(weights_count) {
     weights = new double[weights_count];
     // Init all weights and biases between 0.0 and 1.0
     for (int i = 0; i < weights_count; i++) {
-        srand(time(NULL));
-        // rand() / (double)RAND_MAX * 2.0 - 1.0;
         weights[i] = ((double)rand()) / ((double)RAND_MAX);
+        // rand() / (double)RAND_MAX * 2.0 - 1.0;
     }
 }
 
@@ -25,29 +24,37 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
         trainingSetOrder[j] = j;
     }
 
-    debuglog("here");
-
     // Iterate with epochs
     for (int i = 0; i < epochs; i++) {
-        // shuffle the training set
-        _shuffle(trainingSetOrder);
+        // // shuffle the training set
+        // _shuffle(trainingSetOrder);
+
+        std::cout << "\n";
 
         // for each training set
         for (int j = 0; j < sample_count; j++) {
             // select a training set ID
             int trainingSetID = trainingSetOrder[j];
 
+            std::cout << j << " -\nsetInputs : ";
+
             // create a copy of the inputs of the set
             std::vector<double> setInputs(inputs_size);
             for (int k = 0; k < setInputs.size(); k++) {
                 setInputs[k] = train_inputs[(trainingSetID * inputs_size) + k];
+                std::cout << setInputs[k] << " - ";
             }
+
+            std::cout << "\nsetOutputs : ";
 
             // create a copy of the outputs of the set
             std::vector<double> setOutputs(outputs_size);
             for (int k = 0; k < setOutputs.size(); k++) {
                 setOutputs[k] = train_outputs[(trainingSetID * outputs_size) + k];
+                std::cout << setOutputs[k] << " - ";
             }
+
+            std::cout << "\n";
 
             // *** Predict Function ***
 
@@ -61,20 +68,25 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
                 }
                 // compute the sigmoid of the activation
                 activation = sigmoid(activation);
+                std::cout << "Activation: " << activation << "\n";
                 // compute the error
                 double squaredError = learning_rate * pow((float)(activation - setOutputs[k]), 2);
             }
 
             // *** Learn Function ***
 
+            std::cout << "weights : ";
+
             // backpropagation of error on weights
             for (int k = 0; k < outputs_size; k++) {  // One unique output
                 for (int l = 0; l < inputs_size; l++) {
-                    weights[l] = _update_weight(weights[l], 0.5f,
+                    std::cout << weights[l] << " - ";
+                    weights[l] = _update_weight(weights[l], learning_rate,
                                                 setOutputs[0],  // one output
                                                 activation, setInputs[l]);
                 }
             }
+            std::cout << "\n\n";
         }
     }
 }
@@ -86,7 +98,7 @@ void LinearModel::_shuffle(std::vector<int>& array) const {
     std::shuffle(array.begin(), array.end(), g);
 }
 
-double LinearModel::_update_weight(double old_weight, float learning_rate, double target_value, double actual_value, double entry_value) const {
+double LinearModel::_update_weight(double old_weight, double learning_rate, double target_value, double actual_value, double entry_value) const {
     return old_weight - (learning_rate * (actual_value - target_value) * dSigmoid(actual_value) * entry_value);
 }
 

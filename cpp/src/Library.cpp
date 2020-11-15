@@ -1,13 +1,4 @@
-#include <math.h>
-#include <algorithm>
-#include <cstring>
-#include <iostream>
-#include <iterator>
-#include <random>
-#include <vector>
-
-#include <fstream>
-#include <iostream>
+#include <Library.hpp>
 
 #include <LinearModel.hpp>
 
@@ -25,7 +16,7 @@ extern "C"
      * @param flag Is the type of the model
      * @param weights_count Is the number of ...
      */
-    dllexport BaseModel* CreateModel(int flag, int weights_count) {
+    dllexport BaseModel* Library::CreateModel(int flag, int weights_count) {
         switch (flag) {
             case 0:
                 return new LinearModel(weights_count);
@@ -49,8 +40,8 @@ extern "C"
      * @param epochs
      * @param learning_rate
      */
-    dllexport void Train(BaseModel* model, int sample_count, double* train_inputs, int inputs_size, double* train_outputs, int outputs_size,
-                         int epochs, double learning_rate) {
+    dllexport void Library::Train(BaseModel* model, int sample_count, double* train_inputs, int inputs_size, double* train_outputs, int outputs_size,
+                                  int epochs, double learning_rate) {
         model->train(sample_count, train_inputs, inputs_size, train_outputs, outputs_size, epochs, learning_rate);
     };
 
@@ -63,16 +54,16 @@ extern "C"
      * @param outputs Is the output predicted by the model, (normally empty)
      * @param outputs_size Is the size of outputs parameter
      */
-    dllexport void Predict(BaseModel* model, double* inputs, int inputs_size, double* outputs, int outputs_size) {
+    dllexport void Library::Predict(BaseModel* model, double* inputs, int inputs_size, double* outputs, int outputs_size) {
         model->predict(inputs, inputs_size, outputs, outputs_size);
     };
 
-    dllexport double* GetWeigths(BaseModel* model) { return model->getWeigths(); }
+    dllexport double* Library::GetWeigths(BaseModel* model) { return model->getWeigths(); }
 
     /**
      * Allow to delete model pointer to avoid leak
      *
      * @param model Is the pointer to the model
      */
-    dllexport void DeleteModel(BaseModel* model) { delete model; };
+    dllexport void Library::DeleteModel(BaseModel* model) { delete model; };
 }
