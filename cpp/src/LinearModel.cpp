@@ -11,7 +11,7 @@ LinearModel::LinearModel(int weights_count) : BaseModel(weights_count) {
     weights = new double[weights_count];
     // Init all weights and biases between 0.0 and 1.0
     for (int i = 0; i < weights_count; i++) {
-        weights[i] = ((double)rand()) / ((double)RAND_MAX);
+        weights[i] = ((double)rand()) / ((double)RAND_MAX) * 2.0 - 1.0;
         // rand() / (double)RAND_MAX * 2.0 - 1.0;
     }
 }
@@ -62,8 +62,8 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
                 for (int l = 0; l < inputs_size; l++) {
                     activation[k] += setInputs[l] * weights[l];
                 }
-                // compute the sigmoid of the activation
-                activation[k] = sigmoid(activation[k]);
+                // compute the _sigmoid of the activation
+                activation[k] = _sigmoid(activation[k]);
 
                 // compute the error
                 double squaredError = learning_rate * pow((float)(activation[k] - setOutputs[k]), 2);
@@ -89,7 +89,7 @@ void LinearModel::_shuffle(std::vector<int>& array) const {
 }
 
 double LinearModel::_update_weight(double old_weight, double learning_rate, double target_value, double actual_value, double entry_value) const {
-    return old_weight - (learning_rate * (actual_value - target_value) * dSigmoid(actual_value) * entry_value);
+    return old_weight - (learning_rate * (actual_value - target_value) * _sigmoid_derivative(actual_value) * entry_value);
 }
 
 void LinearModel::predict(double* inputs, int inputs_size, double* outputs, int outputs_size) const {
@@ -105,8 +105,8 @@ void LinearModel::predict(double* inputs, int inputs_size, double* outputs, int 
             activation[k] += inputs[k * inputs_size + l] * weights[l];
         }
 
-        // compute the sigmoid of the activation
-        activation[k] = sigmoid(activation[k]);
+        // compute the _sigmoid of the activation
+        activation[k] = _sigmoid(activation[k]);
 
         outputs[k] = activation[k];
     }

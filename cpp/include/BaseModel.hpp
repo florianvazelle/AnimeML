@@ -21,8 +21,8 @@ class BaseModel {
     int weights_count;
 
     // Activation function and its derivative
-    inline double sigmoid(double x) const { return 1 / (1 + exp(-x)); }
-    inline double dSigmoid(double x) const { return x * (1 - x); }
+    inline double _sigmoid(double x) const { return 1 / (1 + exp(-x)); }
+    inline double _sigmoid_derivative(double x) const { return x * (1 - x); }
 
     void debuglog(std::string msg) {
         std::fstream fout;

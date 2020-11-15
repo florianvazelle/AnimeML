@@ -1,5 +1,6 @@
 [requires]
 doctest/2.4.0 
+stb/20200203
 
 [generators]
 cmake

@@ -19,4 +19,9 @@ TEST_CASE("Load a CSV file") {
     CHECK(inputs[1] == 0.27);
     CHECK(inputs[11] == 6.3);
     CHECK(outputs[0] == 6.0);
+
+    for (auto output : outputs) {
+        CHECK(0 <= output);
+        CHECK(output <= 10);
+    }
 }
