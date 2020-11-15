@@ -14,9 +14,9 @@ TEST_CASE("Linear Classification") {
     double inputs[6] = {1, 1, 2, 3, 3, 3};
 
     const int numOutputs = 1;
-    double outputs[3] = {1, 0, 0};
+    double outputs[3] = {1, 0, 1};
 
-    const int epochs = 1000;
+    const int epochs = 10000;
     const double learningRate = 0.5f;
 
     BaseModel* model = Library::CreateModel(Library::Flags::LINEAR_MODEL, numInputs);

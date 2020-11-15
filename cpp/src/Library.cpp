@@ -49,10 +49,10 @@ extern "C"
      * Use a trained model to predict value
      *
      * @param model Is the pointer to the trained model
-     * @param inputs Are new entries that we want to submit to the model
-     * @param inputs_size Is the size of inputs parameter
+     * @param inputs Are new set of entries that we want to submit to the model (for each set of input we predict a value)
+     * @param inputs_size Is the size of one set of input
      * @param outputs Is the output predicted by the model, (normally empty)
-     * @param outputs_size Is the size of outputs parameter
+     * @param outputs_size Is the size of one set of output
      */
     dllexport void Library::Predict(BaseModel* model, double* inputs, int inputs_size, double* outputs, int outputs_size) {
         model->predict(inputs, inputs_size, outputs, outputs_size);

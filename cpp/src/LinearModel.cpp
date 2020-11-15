@@ -31,9 +31,7 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
     // Iterate with epochs
     for (int i = 0; i < epochs; i++) {
         // shuffle the training set
-        // _shuffle(trainingSetOrder);
-
-        std::cout << "\n";
+        _shuffle(trainingSetOrder);
 
         // for each training set
         for (int j = 0; j < sample_count; j++) {
@@ -66,25 +64,19 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
                 }
                 // compute the sigmoid of the activation
                 activation[k] = sigmoid(activation[k]);
-                std::cout << "Activation: " << activation[k] << "\n";
 
                 // compute the error
                 double squaredError = learning_rate * pow((float)(activation[k] - setOutputs[k]), 2);
-                std::cout << "Cost = " << squaredError << "\n";
             }
 
             // *** Learn Function ***
 
-            std::cout << "weights : ";
-
             // backpropagation of error on weights
             for (int k = 0; k < outputs_size; k++) {  // One unique output
                 for (int l = 0; l < inputs_size; l++) {
-                    std::cout << weights[l] << " - ";
                     weights[l] = _update_weight(weights[l], learning_rate, setOutputs[k], activation[k], setInputs[l]);
                 }
             }
-            std::cout << "\n\n";
         }
     }
 }
@@ -110,7 +102,7 @@ void LinearModel::predict(double* inputs, int inputs_size, double* outputs, int 
 
         // Loop on inputs
         for (int l = 0; l < inputs_size; l++) {
-            activation[k] += inputs[l] * weights[l];
+            activation[k] += inputs[k * inputs_size + l] * weights[l];
         }
 
         // compute the sigmoid of the activation
