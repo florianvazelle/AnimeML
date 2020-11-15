@@ -8,6 +8,7 @@
 class BaseModel {
   public:
     BaseModel(int weights_count) : weights_count(weights_count) {}
+    virtual ~BaseModel() { delete weights; }
 
     inline double* getWeigths() const { return weights; }
 
