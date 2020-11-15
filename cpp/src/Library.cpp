@@ -18,7 +18,7 @@ extern "C"
      */
     dllexport BaseModel* Library::CreateModel(int flag, int weights_count) {
         switch (flag) {
-            case 0:
+            case LINEAR_MODEL:
                 return new LinearModel(weights_count);
                 // case 1:
                 //     return new MLP{};

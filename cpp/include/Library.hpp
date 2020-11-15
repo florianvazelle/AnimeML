@@ -5,6 +5,8 @@
 
 class Library {
   public:
+    enum Flags { LINEAR_MODEL = 0 };
+
     static BaseModel* CreateModel(int flag, int weights_count);
     static void Train(BaseModel* model, int sample_count, double* train_inputs, int inputs_size, double* train_outputs, int outputs_size, int epochs,
                       double learning_rate);

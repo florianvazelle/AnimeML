@@ -26,7 +26,7 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
 
     // Iterate with epochs
     for (int i = 0; i < epochs; i++) {
-        // // shuffle the training set
+        // shuffle the training set
         // _shuffle(trainingSetOrder);
 
         std::cout << "\n";
@@ -36,25 +36,17 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
             // select a training set ID
             int trainingSetID = trainingSetOrder[j];
 
-            std::cout << j << " -\nsetInputs : ";
-
             // create a copy of the inputs of the set
             std::vector<double> setInputs(inputs_size);
             for (int k = 0; k < setInputs.size(); k++) {
                 setInputs[k] = train_inputs[(trainingSetID * inputs_size) + k];
-                std::cout << setInputs[k] << " - ";
             }
-
-            std::cout << "\nsetOutputs : ";
 
             // create a copy of the outputs of the set
             std::vector<double> setOutputs(outputs_size);
             for (int k = 0; k < setOutputs.size(); k++) {
                 setOutputs[k] = train_outputs[(trainingSetID * outputs_size) + k];
-                std::cout << setOutputs[k] << " - ";
             }
-
-            std::cout << "\n";
 
             // *** Predict Function ***
 
@@ -82,7 +74,7 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
                 for (int l = 0; l < inputs_size; l++) {
                     std::cout << weights[l] << " - ";
                     weights[l] = _update_weight(weights[l], learning_rate,
-                                                setOutputs[0],  // one output
+                                                setOutputs[k],  // one output
                                                 activation, setInputs[l]);
                 }
             }
