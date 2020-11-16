@@ -100,7 +100,7 @@ static void Cross(int flag) {
 
     std::vector<double> inputs(1000);
     std::vector<double> outputs(500);
-    for (int i = 0, j = 0; i < outputs.size(); i++, j += 2) {
+    for (int i = 0, j = 0; i < sample_count; i++, j += 2) {
         inputs[j] = 2.0 * myrand() - 1.0;
         inputs[j + 1] = 2.0 * myrand() - 1.0;
 
@@ -119,7 +119,7 @@ static void MultiLinear3Classes(int flag) {
     std::vector<double> inputs(1000);
     std::vector<double> outputs(1500);
 
-    for (int i = 0, j = 0; i < outputs.size(); i++, j += 2) {
+    for (int i = 0, j = 0; i < sample_count; i++, j += 2) {
         inputs[j] = 2.0 * myrand() - 1.0;
         inputs[j + 1] = 2.0 * myrand() - 1.0;
 
@@ -133,7 +133,7 @@ static void MultiLinear3Classes(int flag) {
         } else {
             res = {0, 0, 0};
         };
-        outputs.insert(outputs.begin() + i, res.begin(), res.end());
+        outputs.insert(outputs.end(), res.begin(), res.end());
     }
 
     CheckModel(flag, sample_count, inputs.data(), numInputs, outputs.data(), numOutputs);
@@ -147,7 +147,7 @@ static void MultiCross(int flag) {
 
     std::vector<double> inputs(2000);
     std::vector<double> outputs(3000);
-    for (int i = 0, j = 0; i < outputs.size(); i++, j += 2) {
+    for (int i = 0, j = 0; i < sample_count; i++, j += 2) {
         inputs[j] = 2.0 * myrand() - 1.0;
         inputs[j + 1] = 2.0 * myrand() - 1.0;
 
