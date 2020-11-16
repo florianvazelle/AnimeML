@@ -21,28 +21,27 @@ TEST_CASE("Simple Test 1") {
     const int epochs = 10000;
     const double learningRate = 0.5;
 
-    Library lib;
-    BaseModel* model = lib.CreateModel(Library::Flags::LINEAR_MODEL, numInputs);
+    BaseModel* model = Library::CreateModel(Library::Flags::LINEAR_MODEL, numInputs);
 
-    lib.Train(model,             // weights
-              trainingSet_Size,  // number of training sets
-              inputs,            // all_inputs array
-              numInputs,         // number of inputs for 1 set
-              outputs,           // all_inputs array
-              numOutputs,        // number of inputs for 1 set
-              epochs,            // number of epoch
-              learningRate       // learning rate
+    Library::Train(model,             // weights
+                   trainingSet_Size,  // number of training sets
+                   inputs,            // all_inputs array
+                   numInputs,         // number of inputs for 1 set
+                   outputs,           // all_inputs array
+                   numOutputs,        // number of inputs for 1 set
+                   epochs,            // number of epoch
+                   learningRate       // learning rate
     );
 
     std::vector<double> results(trainingSet_Size);
-    lib.Predict(model, inputs, numInputs, results.data(), trainingSet_Size);
+    Library::Predict(model, inputs, numInputs, results.data(), trainingSet_Size);
 
     for (int i = 0; i < 3; i++) {
         CHECK(std::abs(results[i] - outputs[i]) < EPSILON);
         std::cout << results[i] << " == " << outputs[i] << std::endl;
     }
 
-    lib.DeleteModel(model);
+    Library::DeleteModel(model);
 }
 
 // TEST_CASE("Wine Quality") {

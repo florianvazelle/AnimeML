@@ -12,9 +12,7 @@ class BaseModel {
 
     inline double* getWeigths() const { return weights; }
 
-    virtual void train(int sample_count, double* train_inputs, int inputs_size, double* train_outputs, int output_size, int epochs,
-                       double learning_rate)
-        = 0;
+    virtual void train(int sample_count, double* train_inputs, int inputs_size, double* train_outputs, int output_size, int epochs, double learning_rate) = 0;
     virtual void predict(double* inputs, int inputs_size, double* outputs, int outputs_size) const = 0;
 
   protected:

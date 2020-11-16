@@ -18,28 +18,27 @@ static void CheckModel(int flag, int sample_count, double* inputs, int numInputs
     const int epochs = 10000;
     const double learningRate = 0.75;
 
-    Library lib;
-    BaseModel* model = lib.CreateModel(flag, numInputs);
+    BaseModel* model = Library::CreateModel(flag, numInputs);
 
-    lib.Train(model,         // weights
-              sample_count,  // number of training sets
-              inputs,        // all_inputs array
-              numInputs,     // number of inputs for 1 set
-              outputs,       // all_inputs array
-              numOutputs,    // number of inputs for 1 set
-              epochs,        // number of epoch
-              learningRate   // learning rate
+    Library::Train(model,         // weights
+                   sample_count,  // number of training sets
+                   inputs,        // all_inputs array
+                   numInputs,     // number of inputs for 1 set
+                   outputs,       // all_inputs array
+                   numOutputs,    // number of inputs for 1 set
+                   epochs,        // number of epoch
+                   learningRate   // learning rate
     );
 
     std::vector<double> results(sample_count);
-    lib.Predict(model, inputs, numInputs, results.data(), sample_count);
+    Library::Predict(model, inputs, numInputs, results.data(), sample_count);
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < sample_count; i++) {
         CHECK(std::abs(results[i] - outputs[i]) < EPSILON);
-        std::cout << results[i] << " == " << outputs[i] << std::endl;
+        std::cout << results[i] << " == " << outputs[i] << '\n';
     }
 
-    lib.DeleteModel(model);
+    Library::DeleteModel(model);
 }
 
 static void LinearSimple(int flag) {
@@ -49,7 +48,7 @@ static void LinearSimple(int flag) {
     double inputs[6] = {1, 1, 2, 3, 3, 3};
 
     const int numOutputs = 1;
-    double outputs[3] = {1, -1 - 1};
+    double outputs[3] = {1, -1, -1};
 
     CheckModel(flag, sample_count, inputs, numInputs, outputs, numOutputs);
 }
@@ -119,7 +118,7 @@ static void MultiLinear3Classes(int flag) {
     std::vector<double> inputs(1000);
     std::vector<double> outputs(1500);
 
-    for (int i = 0, j = 0; i < sample_count; i++, j += 2) {
+    for (int i = 0, j = 0, k = 0; i < sample_count; i++, j += 2, k += 3) {
         inputs[j] = 2.0 * myrand() - 1.0;
         inputs[j + 1] = 2.0 * myrand() - 1.0;
 
@@ -133,7 +132,7 @@ static void MultiLinear3Classes(int flag) {
         } else {
             res = {0, 0, 0};
         };
-        outputs.insert(outputs.end(), res.begin(), res.end());
+        outputs.insert(outputs.begin() + k, res.begin(), res.end());
     }
 
     CheckModel(flag, sample_count, inputs.data(), numInputs, outputs.data(), numOutputs);
@@ -147,7 +146,7 @@ static void MultiCross(int flag) {
 
     std::vector<double> inputs(2000);
     std::vector<double> outputs(3000);
-    for (int i = 0, j = 0; i < sample_count; i++, j += 2) {
+    for (int i = 0, j = 0, k = 0; i < sample_count; i++, j += 2, k += 3) {
         inputs[j] = 2.0 * myrand() - 1.0;
         inputs[j + 1] = 2.0 * myrand() - 1.0;
 
@@ -159,7 +158,7 @@ static void MultiCross(int flag) {
         } else {
             res = {0, 0, 1};
         };
-        outputs.insert(outputs.begin() + i, res.begin(), res.end());
+        outputs.insert(outputs.begin() + k, res.begin(), res.end());
     }
 
     CheckModel(flag, sample_count, inputs.data(), numInputs, outputs.data(), numOutputs);
