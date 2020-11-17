@@ -14,10 +14,10 @@
  * @param flag Is the type of the model
  * @param weights_count Is the number of ...
  */
-BaseModel* Library::CreateModel(int flag, int weights_count) {
+BaseModel* Library::CreateModel(int flag, int weights_count, bool is_classification) {
     switch (flag) {
         case LINEAR_MODEL:
-            return new LinearModel(weights_count);
+            return new LinearModel(weights_count, is_classification);
             // case 1:
             //     return new MLP{};
     }
@@ -80,15 +80,9 @@ void Library::DeleteModel(BaseModel* model) { delete model; };
  */
 extern "C"
 {
-    dllexport BaseModel* CreateModel(int flag, int weights_count) { return Library::CreateModel(flag, weights_count); };
-    dllexport void Train(BaseModel* model,
-                         int sample_count,
-                         const double* train_inputs,
-                         int inputs_size,
-                         const double* train_outputs,
-                         int outputs_size,
-                         int epochs,
-                         double learning_rate) {
+    dllexport BaseModel* CreateModel(int flag, int weights_count, bool is_classification) { return Library::CreateModel(flag, weights_count, is_classification); };
+    dllexport void
+    Train(BaseModel* model, int sample_count, const double* train_inputs, int inputs_size, const double* train_outputs, int outputs_size, int epochs, double learning_rate) {
         Library::Train(model, sample_count, train_inputs, inputs_size, train_outputs, outputs_size, epochs, learning_rate);
     };
     dllexport void Predict(BaseModel* model, int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size) {

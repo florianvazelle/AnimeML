@@ -7,7 +7,7 @@
 #include <random>
 #include <vector>
 
-LinearModel::LinearModel(int weights_count) : BaseModel(weights_count) {
+LinearModel::LinearModel(int weights_count, bool is_classification) : BaseModel(weights_count, is_classification) {
     weights = new double[weights_count + 1];
     // Init all weights and biases between 0.0 and 1.0
     for (int i = 0; i < weights_count + 1; i++) {
@@ -16,13 +16,7 @@ LinearModel::LinearModel(int weights_count) : BaseModel(weights_count) {
     }
 }
 
-void LinearModel::train(int sample_count,
-                        const double* train_inputs,
-                        int inputs_size,
-                        const double* train_outputs,
-                        int outputs_size,
-                        int epochs,
-                        double learning_rate) {
+void LinearModel::train(int sample_count, const double* train_inputs, int inputs_size, const double* train_outputs, int outputs_size, int epochs, double learning_rate) {
     std::vector<int> trainingSetOrder(sample_count);
 
     for (int i = 0; i < trainingSetOrder.size(); i++) {
@@ -74,7 +68,12 @@ double LinearModel::_update_weight(double old_weight, double learning_rate, doub
     return old_weight - (learning_rate * (actual_value - target_value) * entry_value);
 }
 
-double LinearModel::_activation(double value) const { return (std::tanh(value) < 0) ? -1 : 1; }
+double LinearModel::_activation(double value) const {
+    if (is_classification)
+        return (std::tanh(value) < 0) ? -1 : 1;
+    else
+        return value;
+}
 
 void LinearModel::predict(int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size) const {
     for (int j = 0; j < sample_count; j++) {

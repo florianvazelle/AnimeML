@@ -5,7 +5,7 @@
   AllowAllParametersOfDeclarationOnNextLine: 'false'
   AlwaysBreakTemplateDeclarations: 'No'
   BreakBeforeBraces: Attach
-  ColumnLimit: '150'
+  ColumnLimit: '175'
   ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
   IncludeBlocks: Preserve
   IndentPPDirectives: AfterHash
