@@ -8,12 +8,20 @@
 class BaseModel {
   public:
     BaseModel(int weights_count) : weights_count(weights_count) {}
-    virtual ~BaseModel() { delete weights; }
+    BaseModel(std::string filename = "model.csv");
+    virtual ~BaseModel() { delete[] weights; }
 
     inline double* getWeigths() const { return weights; }
 
-    virtual void train(int sample_count, double* train_inputs, int inputs_size, double* train_outputs, int output_size, int epochs, double learning_rate) = 0;
-    virtual void predict(double* inputs, int inputs_size, double* outputs, int outputs_size) const = 0;
+    virtual void train(int sample_count,
+                       const double* train_inputs,
+                       int inputs_size,
+                       const double* train_outputs,
+                       int output_size,
+                       int epochs,
+                       double learning_rate)
+        = 0;
+    virtual void predict(int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size) const = 0;
 
   protected:
     double* weights;
@@ -29,12 +37,11 @@ class BaseModel {
     // It indicates how confident we are about the existing weight
     inline double _sigmoid_derivative(double x) const { return x * (1 - x); }
 
-    void debuglog(std::string msg) {
-        std::fstream fout;
-        fout.open("debug.txt", std::ios::out | std::ios::app);
-        fout << msg << '\n';
-        fout.close();
-    }
+    void debuglog(std::string msg);
+
+    // npl is an array of number of weight by layer (for example: npl = [4, 3, 3,
+    // 2], the first layer have 4 weigth, the second have 3 weight ...)
+    void save(std::vector<int> npl, std::string filename = "model.csv") const;
 };
 
 #endif

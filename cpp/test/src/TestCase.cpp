@@ -1,126 +1,162 @@
 
 #include <doctest/doctest.h>
 
-#include <CSVFile.hpp>
 #include <Library.hpp>
 #include <LinearModel.hpp>
+#include <algorithm>
 #include <cmath>
+#include <cstring>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
+#include <iterator>
 #include <memory>
+#include <random>
 #include <vector>
 
-static double myrand() { return ((double)rand()) / ((double)RAND_MAX); }
+static auto seed = unsigned(std::time(0));
 
-/* Helper to train model and test it on the training input */
-static void CheckModel(int flag, int sample_count, double* inputs, int numInputs, double* outputs, int numOutputs) {
+static double _rand(double min = 0, double max = 1) {
+    double f = ((double)rand()) / ((double)RAND_MAX);
+    return min + f * (max - min);
+}
+
+// to shuffle is the same order at runtime
+static void _no_random_shuffle(std::vector<double>& vec) {
+    std::srand(seed);
+    std::random_shuffle(vec.begin(), vec.end());
+}
+
+static bool CheckModel(const int flag,
+                       const int train_sample_count,
+                       const int predict_sample_count,
+                       const std::vector<double>& train_inputs,
+                       const std::vector<double>& train_outputs,
+                       const std::vector<double>& predict_inputs,
+                       const std::vector<double>& predict_outputs,
+                       const int epochs = 1000,
+                       const double learning_rate = 0.1) {
     const double EPSILON = 0.1;
 
-    const int epochs = 10000;
-    const double learningRate = 0.75;
+    const int input_size = train_inputs.size() / train_sample_count;
+    const int output_size = train_outputs.size() / train_sample_count;
 
-    BaseModel* model = Library::CreateModel(flag, numInputs);
+    BaseModel* model = Library::CreateModel(flag, input_size);
 
-    Library::Train(model,         // weights
-                   sample_count,  // number of training sets
-                   inputs,        // all_inputs array
-                   numInputs,     // number of inputs for 1 set
-                   outputs,       // all_inputs array
-                   numOutputs,    // number of inputs for 1 set
-                   epochs,        // number of epoch
-                   learningRate   // learning rate
+    Library::Train(model,                 // weights
+                   train_sample_count,    // number of training sets
+                   train_inputs.data(),   // all_inputs array
+                   input_size,            // number of inputs for 1 set
+                   train_outputs.data(),  // all_inputs array
+                   output_size,           // number of inputs for 1 set
+                   epochs,                // number of epoch
+                   learning_rate          // learning rate
     );
 
-    std::vector<double> results(sample_count);
-    Library::Predict(model, inputs, numInputs, results.data(), sample_count);
+    std::vector<double> results(predict_sample_count * output_size);
+    Library::Predict(model, predict_sample_count, predict_inputs.data(), input_size, results.data(), output_size);
 
-    for (int i = 0; i < sample_count; i++) {
-        CHECK(std::abs(results[i] - outputs[i]) < EPSILON);
-        std::cout << results[i] << " == " << outputs[i] << '\n';
+    bool valid = true;
+    for (int i = 0; i < predict_sample_count; i++) {
+        valid = valid && (results[i] == predict_outputs[i]);
     }
 
     Library::DeleteModel(model);
+
+    return valid;
+}
+
+static bool CheckModelWithSameTrainPredict(const int flag,
+                                           const int sample_count,
+                                           const std::vector<double>& inputs,
+                                           const std::vector<double>& outputs,
+                                           const int epochs = 1000,
+                                           const double learning_rate = 0.1) {
+    return CheckModel(flag, sample_count, sample_count, inputs, outputs, inputs, outputs, epochs, learning_rate);
+}
+
+static bool CheckModelWithSplitTrainPredict(const int flag,
+                                            const int sample_count,
+                                            const int predict_sample_count,
+                                            std::vector<double>& inputs,
+                                            std::vector<double>& outputs,
+                                            const int epochs = 1000,
+                                            const double learning_rate = 0.1) {
+    _no_random_shuffle(inputs);
+    _no_random_shuffle(outputs);
+
+    std::vector<double> train_inputs(inputs.begin(), inputs.end() - predict_sample_count);
+    std::vector<double> train_outputs(outputs.begin(), outputs.end() - predict_sample_count);
+
+    std::vector<double> predict_inputs(inputs.begin() + sample_count - predict_sample_count, inputs.end());
+    std::vector<double> predict_outputs(outputs.begin() + sample_count - predict_sample_count, outputs.end());
+
+    return CheckModel(flag, sample_count - predict_sample_count, predict_sample_count, train_inputs, train_outputs, predict_inputs, predict_outputs,
+                      epochs, learning_rate);
 }
 
 static void LinearSimple(int flag) {
     const int sample_count = 3;
 
-    const int numInputs = 2;
-    double inputs[6] = {1, 1, 2, 3, 3, 3};
+    std::vector<double> inputs({
+        1, 1,  // 1st
+        2, 3,  // 2nd
+        3, 3   // 3th
+    });
+    std::vector<double> outputs({
+        1,   // 1st
+        -1,  // 2nd
+        -1   // 3th
+    });
 
-    const int numOutputs = 1;
-    double outputs[3] = {1, -1, -1};
-
-    CheckModel(flag, sample_count, inputs, numInputs, outputs, numOutputs);
+    CHECK(CheckModelWithSameTrainPredict(flag, sample_count, inputs, outputs, 100, 0.5));
 }
 
 static void LinearMultiple(int flag) {
     const int sample_count = 100;
 
-    const int numInputs = 2;
     std::vector<double> inputs(200);
-    for (int i = 0; i < inputs.size(); i++) {
-        inputs[i] = myrand() * 0.9;
-        if (i < 100) {
-            inputs[i] += 1;
-        } else {
-            inputs[i] += 2;
-        }
-    }
+    std::generate(inputs.begin(), inputs.end(), [i = 0]() mutable { return (_rand() * 0.9) + ((i++ < 100) ? 1 : 2); });
 
-    const int numOutputs = 1;
     std::vector<double> outputs(100);
-    for (int i = 0; i < outputs.size(); i++) {
-        outputs[i] = 1;
-        if (i >= 50) {
-            outputs[i] *= -1.0;
-        }
-    }
+    std::generate(outputs.begin(), outputs.end(), [j = 0]() mutable { return (j++ < 50) ? 1 : -1; });
 
-    CheckModel(flag, sample_count, inputs.data(), numInputs, outputs.data(), numOutputs);
+    CHECK(CheckModelWithSameTrainPredict(flag, sample_count, inputs, outputs));
 }
 
 static void XOR(int flag) {
     const int sample_count = 4;
 
-    const int numInputs = 2;
-    double inputs[8] = {1, 0, 0, 1, 0, 0, 1, 1};
+    std::vector<double> inputs({1, 0, 0, 1, 0, 0, 1, 1});
+    std::vector<double> outputs({1, 1, -1, -1});
 
-    const int numOutputs = 1;
-    double outputs[4] = {1, 1, -1 - 1};
-
-    CheckModel(flag, sample_count, inputs, numInputs, outputs, numOutputs);
+    CHECK(!CheckModelWithSameTrainPredict(flag, sample_count, inputs, outputs));
 }
 
 static void Cross(int flag) {
     const int sample_count = 500;
 
-    const int numInputs = 2;
-    const int numOutputs = 1;
-
     std::vector<double> inputs(1000);
     std::vector<double> outputs(500);
     for (int i = 0, j = 0; i < sample_count; i++, j += 2) {
-        inputs[j] = 2.0 * myrand() - 1.0;
-        inputs[j + 1] = 2.0 * myrand() - 1.0;
+        inputs[j] = _rand(-1, 1);
+        inputs[j + 1] = _rand(-1, 1);
 
         outputs[i] = (std::abs(inputs[j]) <= 0.3 || std::abs(inputs[j + 1]) <= 0.3) ? 1 : -1;
     }
 
-    CheckModel(flag, sample_count, inputs.data(), numInputs, outputs.data(), numOutputs);
+    CHECK(!CheckModelWithSameTrainPredict(flag, sample_count, inputs, outputs));
 }
 
 static void MultiLinear3Classes(int flag) {
     const int sample_count = 500;
 
-    const int numInputs = 2;
-    const int numOutputs = 3;
-
     std::vector<double> inputs(1000);
     std::vector<double> outputs(1500);
 
     for (int i = 0, j = 0, k = 0; i < sample_count; i++, j += 2, k += 3) {
-        inputs[j] = 2.0 * myrand() - 1.0;
-        inputs[j + 1] = 2.0 * myrand() - 1.0;
+        inputs[j] = _rand(-1, 1);
+        inputs[j + 1] = _rand(-1, 1);
 
         std::vector<double> res;
         if (-inputs[j] - inputs[j + 1] - 0.5 > 0 && inputs[j + 1] < 0 && inputs[j] - inputs[j + 1] - 0.5 < 0) {
@@ -135,20 +171,17 @@ static void MultiLinear3Classes(int flag) {
         outputs.insert(outputs.begin() + k, res.begin(), res.end());
     }
 
-    CheckModel(flag, sample_count, inputs.data(), numInputs, outputs.data(), numOutputs);
+    CHECK(CheckModelWithSameTrainPredict(flag, sample_count, inputs, outputs));
 }
 
 static void MultiCross(int flag) {
     const int sample_count = 1000;
 
-    const int numInputs = 2;
-    const int numOutputs = 3;
-
     std::vector<double> inputs(2000);
     std::vector<double> outputs(3000);
     for (int i = 0, j = 0, k = 0; i < sample_count; i++, j += 2, k += 3) {
-        inputs[j] = 2.0 * myrand() - 1.0;
-        inputs[j + 1] = 2.0 * myrand() - 1.0;
+        inputs[j] = _rand(-1, 1);
+        inputs[j + 1] = _rand(-1, 1);
 
         std::vector<double> res;
         if (std::abs(std::fmod(inputs[j], 0.5)) <= 0.25 && std::abs(std::fmod(inputs[j + 1], 0.5)) > 0.25) {
@@ -161,7 +194,7 @@ static void MultiCross(int flag) {
         outputs.insert(outputs.begin() + k, res.begin(), res.end());
     }
 
-    CheckModel(flag, sample_count, inputs.data(), numInputs, outputs.data(), numOutputs);
+    CHECK(!CheckModelWithSameTrainPredict(flag, sample_count, inputs, outputs));
 }
 
 TEST_CASE("Classification") {
@@ -179,61 +212,46 @@ TEST_CASE("Classification") {
 static void LinearSimple2D(int flag) {
     const int sample_count = 2;
 
-    const int numInputs = 1;
-    double inputs[2] = {1, 2};
+    std::vector<double> inputs({1, 2});
+    std::vector<double> outputs({2, 3});
 
-    const int numOutputs = 1;
-    double outputs[2] = {2, 3};
-
-    CheckModel(flag, sample_count, inputs, numInputs, outputs, numOutputs);
+    CHECK(CheckModelWithSameTrainPredict(flag, sample_count, inputs, outputs));
 }
 
 static void NonLinearSimple2D(int flag) {
     const int sample_count = 3;
 
-    const int numInputs = 1;
-    double inputs[3] = {1, 2, 3};
+    std::vector<double> inputs({1, 2, 3});
+    std::vector<double> outputs({2, 3, 2.5});
 
-    const int numOutputs = 1;
-    double outputs[3] = {2, 3, 2.5};
-
-    CheckModel(flag, sample_count, inputs, numInputs, outputs, numOutputs);
+    CHECK(CheckModelWithSameTrainPredict(flag, sample_count, inputs, outputs));
 }
 
 static void LinearSimple3D(int flag) {
     const int sample_count = 3;
 
-    const int numInputs = 2;
-    double inputs[6] = {1, 1, 2, 2, 3, 1};
+    std::vector<double> inputs({1, 1, 2, 2, 3, 1});
+    std::vector<double> outputs({2, 3, 2.5});
 
-    const int numOutputs = 1;
-    double outputs[3] = {2, 3, 2.5};
-
-    CheckModel(flag, sample_count, inputs, numInputs, outputs, numOutputs);
+    CHECK(CheckModelWithSameTrainPredict(flag, sample_count, inputs, outputs));
 }
 
 static void LinearTricky3D(int flag) {
     const int sample_count = 3;
 
-    const int numInputs = 2;
-    double inputs[6] = {1, 1, 2, 2, 3, 3};
+    std::vector<double> inputs({1, 1, 2, 2, 3, 3});
+    std::vector<double> outputs({1, 2, 3});
 
-    const int numOutputs = 1;
-    double outputs[3] = {1, 2, 3};
-
-    CheckModel(flag, sample_count, inputs, numInputs, outputs, numOutputs);
+    CHECK(CheckModelWithSameTrainPredict(flag, sample_count, inputs, outputs));
 }
 
 static void NonLinearSimple3D(int flag) {
     const int sample_count = 4;
 
-    const int numInputs = 2;
-    double inputs[8] = {1, 0, 0, 1, 1, 1, 0, 0};
+    std::vector<double> inputs({1, 0, 0, 1, 1, 1, 0, 0});
+    std::vector<double> outputs({2, 1, -2, -1});
 
-    const int numOutputs = 1;
-    double outputs[4] = {2, 1, -2, -1};
-
-    CheckModel(flag, sample_count, inputs, numInputs, outputs, numOutputs);
+    CHECK(CheckModelWithSameTrainPredict(flag, sample_count, inputs, outputs));
 }
 
 // TEST_CASE("Regression") {
