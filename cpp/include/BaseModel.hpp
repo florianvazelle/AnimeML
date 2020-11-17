@@ -8,12 +8,19 @@
 class BaseModel {
   public:
     BaseModel(int weights_count) : weights_count(weights_count) {}
-    virtual ~BaseModel() { delete weights; }
+    virtual ~BaseModel() { delete[] weights; }
 
     inline double* getWeigths() const { return weights; }
 
-    virtual void train(int sample_count, double* train_inputs, int inputs_size, double* train_outputs, int output_size, int epochs, double learning_rate) = 0;
-    virtual void predict(double* inputs, int inputs_size, double* outputs, int outputs_size) const = 0;
+    virtual void train(int sample_count,
+                       const double* train_inputs,
+                       int inputs_size,
+                       const double* train_outputs,
+                       int output_size,
+                       int epochs,
+                       double learning_rate)
+        = 0;
+    virtual void predict(int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size) const = 0;
 
   protected:
     double* weights;

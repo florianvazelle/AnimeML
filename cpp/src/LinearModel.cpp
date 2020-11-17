@@ -8,15 +8,20 @@
 #include <vector>
 
 LinearModel::LinearModel(int weights_count) : BaseModel(weights_count) {
-    weights = new double[weights_count];
+    weights = new double[weights_count + 1];
     // Init all weights and biases between 0.0 and 1.0
-    for (int i = 0; i < weights_count; i++) {
+    for (int i = 0; i < weights_count + 1; i++) {
         weights[i] = 2 * (((double)rand()) / RAND_MAX) - 1;
         // rand() / (double)RAND_MAX * 2.0 - 1.0;
     }
 }
 
-void LinearModel::train(int sample_count, double* train_inputs, int inputs_size, double* train_outputs, int outputs_size, int epochs,
+void LinearModel::train(int sample_count,
+                        const double* train_inputs,
+                        int inputs_size,
+                        const double* train_outputs,
+                        int outputs_size,
+                        int epochs,
                         double learning_rate) {
     std::vector<int> trainingSetOrder(sample_count);
 
@@ -27,7 +32,7 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
     // Iterate with epochs
     for (int i = 0; i < epochs; i++) {
         // shuffle the training set
-        _shuffle(trainingSetOrder);
+        std::random_shuffle(trainingSetOrder.begin(), trainingSetOrder.end());
 
         // for each training set
         for (int j = 0; j < sample_count; j++) {
@@ -50,7 +55,7 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
 
             // compute activation fonction
             std::vector<double> activation(outputs_size);
-            predict(setInputs.data(), inputs_size, activation.data(), outputs_size);
+            predict(1, setInputs.data(), inputs_size, activation.data(), outputs_size);
 
             // *** Learn Function ***
 
@@ -59,38 +64,31 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
                 for (int l = 0; l < inputs_size; l++) {
                     weights[l] = _update_weight(weights[l], learning_rate, setOutputs[k], activation[k], setInputs[l]);
                 }
+                weights[weights_count] = _update_weight(weights[weights_count], learning_rate, setOutputs[k], activation[k], 1);
             }
         }
     }
 }
 
-void LinearModel::_shuffle(std::vector<int>& array) const {
-    // https://en.cppreference.com/w/cpp/algorithm/random_shuffle#Example
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(array.begin(), array.end(), g);
-}
-
 double LinearModel::_update_weight(double old_weight, double learning_rate, double target_value, double actual_value, double entry_value) const {
-    return old_weight - (learning_rate * (actual_value - target_value) * _sigmoid_derivative(actual_value) * entry_value);
+    return old_weight - (learning_rate * (actual_value - target_value) * entry_value);
 }
 
-void LinearModel::predict(double* inputs, int inputs_size, double* outputs, int outputs_size) const {
-    // compute activation fonction
-    std::vector<double> activation(outputs_size);
+double LinearModel::_activation(double value) const { return (std::tanh(value) < 0) ? -1 : 1; }
 
-    // Loop on outputs (here we have only one output)
-    for (int k = 0; k < outputs_size; k++) {
-        activation[k] = 0;
+void LinearModel::predict(int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size) const {
+    for (int j = 0; j < sample_count; j++) {
+        // Loop on outputs (here we have only one output)
+        for (int k = 0; k < outputs_size; k++) {
+            double activation = weights[weights_count];
 
-        // Loop on inputs
-        for (int l = 0; l < inputs_size; l++) {
-            activation[k] += inputs[k * inputs_size + l] * weights[l];
+            // Loop on inputs
+            for (int l = 0; l < inputs_size; l++) {
+                activation += inputs[j * inputs_size + l] * weights[l];
+            }
+
+            // compute the _sigmoid of the activation
+            outputs[j * outputs_size + k] = _activation(activation);
         }
-
-        // compute the _sigmoid of the activation
-        activation[k] = _sigmoid(activation[k]);
-
-        outputs[k] = activation[k];
     }
 }

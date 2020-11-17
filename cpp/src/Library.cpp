@@ -39,7 +39,13 @@ BaseModel* Library::CreateModel(int flag, int weights_count) {
  * @param epochs
  * @param learning_rate
  */
-void Library::Train(BaseModel* model, int sample_count, double* train_inputs, int inputs_size, double* train_outputs, int outputs_size, int epochs,
+void Library::Train(BaseModel* model,
+                    int sample_count,
+                    const double* train_inputs,
+                    int inputs_size,
+                    const double* train_outputs,
+                    int outputs_size,
+                    int epochs,
                     double learning_rate) {
     model->train(sample_count, train_inputs, inputs_size, train_outputs, outputs_size, epochs, learning_rate);
 };
@@ -53,8 +59,8 @@ void Library::Train(BaseModel* model, int sample_count, double* train_inputs, in
  * @param outputs Is the output predicted by the model, (normally empty)
  * @param outputs_size Is the size of one set of output
  */
-void Library::Predict(BaseModel* model, double* inputs, int inputs_size, double* outputs, int outputs_size) {
-    model->predict(inputs, inputs_size, outputs, outputs_size);
+void Library::Predict(BaseModel* model, int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size) {
+    model->predict(sample_count, inputs, inputs_size, outputs, outputs_size);
 };
 
 double* Library::GetWeigths(BaseModel* model) { return model->getWeigths(); }
@@ -66,15 +72,27 @@ double* Library::GetWeigths(BaseModel* model) { return model->getWeigths(); }
  */
 void Library::DeleteModel(BaseModel* model) { delete model; };
 
+/**
+ * Expose Library methods.
+ *
+ * extern "C" specifies that the function is defined
+ * elsewhere and uses the C-language calling convention.
+ */
 extern "C"
 {
     dllexport BaseModel* CreateModel(int flag, int weights_count) { return Library::CreateModel(flag, weights_count); };
-    dllexport void Train(BaseModel* model, int sample_count, double* train_inputs, int inputs_size, double* train_outputs, int outputs_size,
-                         int epochs, double learning_rate) {
+    dllexport void Train(BaseModel* model,
+                         int sample_count,
+                         const double* train_inputs,
+                         int inputs_size,
+                         const double* train_outputs,
+                         int outputs_size,
+                         int epochs,
+                         double learning_rate) {
         Library::Train(model, sample_count, train_inputs, inputs_size, train_outputs, outputs_size, epochs, learning_rate);
     };
-    dllexport void Predict(BaseModel* model, double* inputs, int inputs_size, double* outputs, int outputs_size) {
-        Library::Predict(model, inputs, inputs_size, outputs, outputs_size);
+    dllexport void Predict(BaseModel* model, int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size) {
+        Library::Predict(model, sample_count, inputs, inputs_size, outputs, outputs_size);
     };
     dllexport double* GetWeigths(BaseModel* model) { return Library::GetWeigths(model); }
     dllexport void DeleteModel(BaseModel* model) { Library::DeleteModel(model); };

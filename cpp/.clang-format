@@ -17,5 +17,6 @@
   BreakBeforeBinaryOperators: All
   BreakBeforeTernaryOperators: 'true'
   BreakBeforeBraces: Custom
+  BinPackParameters: 'false'
   BraceWrapping:
     AfterExternBlock: 'true'
