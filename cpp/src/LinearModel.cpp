@@ -11,7 +11,7 @@ LinearModel::LinearModel(int weights_count) : BaseModel(weights_count) {
     weights = new double[weights_count];
     // Init all weights and biases between 0.0 and 1.0
     for (int i = 0; i < weights_count; i++) {
-        weights[i] = 2 * (((double)rand()) / ((double)RAND_MAX)) - 1.0;
+        weights[i] = 2 * (((double)rand()) / RAND_MAX) - 1;
         // rand() / (double)RAND_MAX * 2.0 - 1.0;
     }
 }
@@ -50,20 +50,7 @@ void LinearModel::train(int sample_count, double* train_inputs, int inputs_size,
 
             // compute activation fonction
             std::vector<double> activation(outputs_size);
-            // Loop on outputs (here we have only one output)
-            for (int k = 0; k < outputs_size; k++) {
-                activation[k] = 0;
-
-                // Loop on inputs
-                for (int l = 0; l < inputs_size; l++) {
-                    activation[k] += setInputs[l] * weights[l];
-                }
-                // compute the _sigmoid of the activation
-                activation[k] = _sigmoid(activation[k]);
-
-                // compute the error
-                double squaredError = learning_rate * pow((float)(activation[k] - setOutputs[k]), 2);
-            }
+            predict(setInputs.data(), inputs_size, activation.data(), outputs_size);
 
             // *** Learn Function ***
 

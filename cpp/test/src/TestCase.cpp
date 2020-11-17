@@ -15,8 +15,8 @@ static double myrand() { return ((double)rand()) / ((double)RAND_MAX); }
 static void CheckModel(int flag, int sample_count, double* inputs, int numInputs, double* outputs, int numOutputs) {
     const double EPSILON = 0.1;
 
-    const int epochs = 10000;
-    const double learningRate = 0.75;
+    const int epochs = 100;
+    const double learningRate = 0.1;
 
     BaseModel* model = Library::CreateModel(flag, numInputs);
 
@@ -41,6 +41,38 @@ static void CheckModel(int flag, int sample_count, double* inputs, int numInputs
     Library::DeleteModel(model);
 }
 
+/* Helper to train model and test it on the training input */
+static void CheckModelPredict(int flag, int sample_count, double* train_inputs, int numInputs, double* train_outputs, int numOutputs,
+                              double* predict_inputs, double* predict_outputs, int predict_sample_count) {
+    const double EPSILON = 0.1;
+
+    const int epochs = 100;
+    const double learningRate = 0.1;
+
+    Library lib;
+    BaseModel* model = Library::CreateModel(flag, numInputs);
+
+    Library::Train(model,          // weights
+                   sample_count,   // number of training sets
+                   train_inputs,   // all_inputs array
+                   numInputs,      // number of inputs for 1 set
+                   train_outputs,  // all_inputs array
+                   numOutputs,     // number of inputs for 1 set
+                   epochs,         // number of epoch
+                   learningRate    // learning rate
+    );
+
+    std::vector<double> results(predict_sample_count);
+    Library::Predict(model, predict_inputs, numInputs, results.data(), predict_sample_count);
+
+    for (int i = 0; i < predict_sample_count; i++) {
+        CHECK(std::abs(results[i] - predict_outputs[i]) < EPSILON);
+        std::cout << results[i] << " == " << predict_outputs[i] << '\n';
+    }
+
+    Library::DeleteModel(model);
+}
+
 static void LinearSimple(int flag) {
     const int sample_count = 3;
 
@@ -48,7 +80,7 @@ static void LinearSimple(int flag) {
     double inputs[6] = {1, 1, 2, 3, 3, 3};
 
     const int numOutputs = 1;
-    double outputs[3] = {1, -1, -1};
+    double outputs[3] = {1, 0, 0};
 
     CheckModel(flag, sample_count, inputs, numInputs, outputs, numOutputs);
 }
@@ -72,11 +104,20 @@ static void LinearMultiple(int flag) {
     for (int i = 0; i < outputs.size(); i++) {
         outputs[i] = 1;
         if (i >= 50) {
-            outputs[i] *= -1.0;
+            outputs[i] *= 0.0;
         }
     }
 
-    CheckModel(flag, sample_count, inputs.data(), numInputs, outputs.data(), numOutputs);
+    const int offset = 3;
+
+    std::vector<double> train_inputs(inputs.begin(), inputs.end() - offset);
+    std::vector<double> train_outputs(outputs.begin(), outputs.end() - offset);
+
+    std::vector<double> predict_inputs(inputs.begin() + sample_count - offset, inputs.end());
+    std::vector<double> predict_outputs(outputs.begin() + sample_count - offset, outputs.end());
+
+    CheckModelPredict(flag, sample_count - offset, train_inputs.data(), numInputs, train_outputs.data(), numOutputs, predict_inputs.data(),
+                      predict_outputs.data(), offset);
 }
 
 static void XOR(int flag) {
@@ -106,7 +147,16 @@ static void Cross(int flag) {
         outputs[i] = (std::abs(inputs[j]) <= 0.3 || std::abs(inputs[j + 1]) <= 0.3) ? 1 : -1;
     }
 
-    CheckModel(flag, sample_count, inputs.data(), numInputs, outputs.data(), numOutputs);
+    const int offset = 3;
+
+    std::vector<double> train_inputs(inputs.begin(), inputs.end() - offset);
+    std::vector<double> train_outputs(outputs.begin(), outputs.end() - offset);
+
+    std::vector<double> predict_inputs(inputs.begin() + sample_count - offset, inputs.end());
+    std::vector<double> predict_outputs(outputs.begin() + sample_count - offset, outputs.end());
+
+    CheckModelPredict(flag, sample_count - offset, train_inputs.data(), numInputs, train_outputs.data(), numOutputs, predict_inputs.data(),
+                      predict_outputs.data(), offset);
 }
 
 static void MultiLinear3Classes(int flag) {
@@ -135,7 +185,16 @@ static void MultiLinear3Classes(int flag) {
         outputs.insert(outputs.begin() + k, res.begin(), res.end());
     }
 
-    CheckModel(flag, sample_count, inputs.data(), numInputs, outputs.data(), numOutputs);
+    const int offset = 3;
+
+    std::vector<double> train_inputs(inputs.begin(), inputs.end() - offset);
+    std::vector<double> train_outputs(outputs.begin(), outputs.end() - offset);
+
+    std::vector<double> predict_inputs(inputs.begin() + sample_count - offset, inputs.end());
+    std::vector<double> predict_outputs(outputs.begin() + sample_count - offset, outputs.end());
+
+    CheckModelPredict(flag, sample_count - offset, train_inputs.data(), numInputs, train_outputs.data(), numOutputs, predict_inputs.data(),
+                      predict_outputs.data(), offset);
 }
 
 static void MultiCross(int flag) {
@@ -161,7 +220,16 @@ static void MultiCross(int flag) {
         outputs.insert(outputs.begin() + k, res.begin(), res.end());
     }
 
-    CheckModel(flag, sample_count, inputs.data(), numInputs, outputs.data(), numOutputs);
+    const int offset = 3;
+
+    std::vector<double> train_inputs(inputs.begin(), inputs.end() - offset);
+    std::vector<double> train_outputs(outputs.begin(), outputs.end() - offset);
+
+    std::vector<double> predict_inputs(inputs.begin() + sample_count - offset, inputs.end());
+    std::vector<double> predict_outputs(outputs.begin() + sample_count - offset, outputs.end());
+
+    CheckModelPredict(flag, sample_count - offset, train_inputs.data(), numInputs, train_outputs.data(), numOutputs, predict_inputs.data(),
+                      predict_outputs.data(), offset);
 }
 
 TEST_CASE("Classification") {
@@ -169,10 +237,10 @@ TEST_CASE("Classification") {
     for (int i = 0; i < 1; i++) {
         SUBCASE("Linear Simple") { LinearSimple(i); }
         SUBCASE("Linear Multiple") { LinearMultiple(i); }
-        SUBCASE("XOR") { XOR(i); }
-        SUBCASE("Cross") { Cross(i); }
-        SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(i); }
-        SUBCASE("Multi Cross") { MultiCross(i); }
+        // SUBCASE("XOR") { XOR(i); }
+        // SUBCASE("Cross") { Cross(i); }
+        // SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(i); }
+        // SUBCASE("Multi Cross") { MultiCross(i); }
     }
 }
 

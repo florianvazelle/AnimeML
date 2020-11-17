@@ -18,8 +18,8 @@ TEST_CASE("Simple Test 1") {
     const int numOutputs = 1;
     double outputs[3] = {1, 0, 1};
 
-    const int epochs = 10000;
-    const double learningRate = 0.5;
+    const int epochs = 100;
+    const double learningRate = 0.1;
 
     BaseModel* model = Library::CreateModel(Library::Flags::LINEAR_MODEL, numInputs);
 
