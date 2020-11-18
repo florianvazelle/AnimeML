@@ -7,7 +7,7 @@
 #include <random>
 #include <vector>
 
-LinearModel::LinearModel(int weights_count) : BaseModel(weights_count) {
+LinearModel::LinearModel(int weights_count, bool is_classification) : BaseModel(weights_count, is_classification) {
     weights = new double[weights_count + 1];
     // Init all weights and biases between 0.0 and 1.0
     for (int i = 0; i < weights_count + 1; i++) {
@@ -16,13 +16,16 @@ LinearModel::LinearModel(int weights_count) : BaseModel(weights_count) {
     }
 }
 
-void LinearModel::train(int sample_count,
-                        const double* train_inputs,
-                        int inputs_size,
-                        const double* train_outputs,
-                        int outputs_size,
-                        int epochs,
-                        double learning_rate) {
+double LinearModel::_update_weight(double learning_rate, double target_value, double actual_value, double entry_value) const {
+    double error = actual_value - target_value;
+    if (is_classification) {
+        error *= (actual_value * actual_value);
+    }
+
+    return (learning_rate * error * entry_value);
+}
+
+void LinearModel::train(int sample_count, const double* train_inputs, int inputs_size, const double* train_outputs, int outputs_size, int epochs, double learning_rate) {
     std::vector<int> trainingSetOrder(sample_count);
 
     for (int i = 0; i < trainingSetOrder.size(); i++) {
@@ -62,19 +65,22 @@ void LinearModel::train(int sample_count,
             // Backpropagation of error on weights / Adjust the weights
             for (int k = 0; k < outputs_size; k++) {  // One unique output
                 for (int l = 0; l < inputs_size; l++) {
-                    weights[l] = _update_weight(weights[l], learning_rate, setOutputs[k], activation[k], setInputs[l]);
+                    weights[l] -= _update_weight(learning_rate, setOutputs[k], activation[k], setInputs[l]);
                 }
-                weights[weights_count] = _update_weight(weights[weights_count], learning_rate, setOutputs[k], activation[k], 1);
+                weights[weights_count] -= _update_weight(learning_rate, setOutputs[k], activation[k], 1);
             }
         }
     }
 }
 
-double LinearModel::_update_weight(double old_weight, double learning_rate, double target_value, double actual_value, double entry_value) const {
-    return old_weight - (learning_rate * (actual_value - target_value) * entry_value);
+double LinearModel::_activation(double value) const {
+    if (is_classification) {
+        value = std::tanh(value);
+        return (value != 0) ? (value > 0) ? 1 : -1 : 0;
+    } else {
+        return value;
+    }
 }
-
-double LinearModel::_activation(double value) const { return (std::tanh(value) < 0) ? -1 : 1; }
 
 void LinearModel::predict(int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size) const {
     for (int j = 0; j < sample_count; j++) {
