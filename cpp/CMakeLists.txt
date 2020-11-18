@@ -5,7 +5,6 @@ cmake_minimum_required(VERSION 3.8)
 project(cpp VERSION 1.2.3.4 LANGUAGES CXX)
 set(LIBRARY_NAME example)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_BUILD_TYPE Release)
 
 # ---- Options ----
 
@@ -27,11 +26,6 @@ else()
     include("${CMAKE_SOURCE_DIR}/cmake/conan.cmake")
     conan_cmake_run(CONANFILE conanfile.txt BASIC_SETUP BUILD missing)
 endif()
-
-# ---- Create object library ----
-
-add_library(${LIBRARY_NAME}Obj OBJECT ${PROJECT_SOURCES} ${PROJECT_HEADERS})
-target_link_libraries(${LIBRARY_NAME}Obj PUBLIC ${CONAN_LIBS})
 
 # ---- Create shared library ----
 

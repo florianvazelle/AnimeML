@@ -38,20 +38,20 @@ static bool CheckModel(const int flag,
     const int input_size = train_inputs.size() / train_sample_count;
     const int output_size = train_outputs.size() / train_sample_count;
 
-    BaseModel* model = Library::CreateModel(flag, input_size, is_classification);
+    BaseModel* model = CreateModel(flag, input_size, is_classification);
 
-    Library::Train(model,                 // weights
-                   train_sample_count,    // number of training sets
-                   train_inputs.data(),   // all_inputs array
-                   input_size,            // number of inputs for 1 set
-                   train_outputs.data(),  // all_inputs array
-                   output_size,           // number of inputs for 1 set
-                   epochs,                // number of epoch
-                   learning_rate          // learning rate
+    Train(model,                 // weights
+          train_sample_count,    // number of training sets
+          train_inputs.data(),   // all_inputs array
+          input_size,            // number of inputs for 1 set
+          train_outputs.data(),  // all_inputs array
+          output_size,           // number of inputs for 1 set
+          epochs,                // number of epoch
+          learning_rate          // learning rate
     );
 
     std::vector<double> results(predict_sample_count * output_size);
-    Library::Predict(model, predict_sample_count, predict_inputs.data(), input_size, results.data(), output_size);
+    Predict(model, predict_sample_count, predict_inputs.data(), input_size, results.data(), output_size);
 
     bool valid = true;
     for (int i = 0; i < predict_sample_count; i++) {
@@ -61,7 +61,7 @@ static bool CheckModel(const int flag,
         }
     }
 
-    Library::DeleteModel(model);
+    DeleteModel(model);
 
     return valid;
 }
