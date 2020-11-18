@@ -1,6 +1,7 @@
 #include <LinearModel.hpp>
 
 #include <algorithm>
+#include <Utils.hpp>
 #include <cstring>
 #include <iostream>
 #include <iterator>
@@ -35,7 +36,7 @@ void LinearModel::train(int sample_count, const double* train_inputs, int inputs
     // Iterate with epochs
     for (int i = 0; i < epochs; i++) {
         // shuffle the training set
-        std::random_shuffle(trainingSetOrder.begin(), trainingSetOrder.end());
+        ml::random_shuffle<int>(trainingSetOrder);
 
         // for each training set
         for (int j = 0; j < sample_count; j++) {

@@ -28,6 +28,11 @@ else()
     conan_cmake_run(CONANFILE conanfile.txt BASIC_SETUP BUILD missing)
 endif()
 
+# ---- Create object library ----
+
+add_library(${LIBRARY_NAME}Obj OBJECT ${PROJECT_SOURCES} ${PROJECT_HEADERS})
+target_link_libraries(${LIBRARY_NAME}Obj PUBLIC ${CONAN_LIBS})
+
 # ---- Create shared library ----
 
 add_library(${LIBRARY_NAME} SHARED ${PROJECT_SOURCES} ${PROJECT_HEADERS})

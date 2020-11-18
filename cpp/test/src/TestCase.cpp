@@ -1,8 +1,9 @@
 
 #include <doctest/doctest.h>
 
-#include <Library.hpp>
 #include <LinearModel.hpp>
+#include <Library.hpp>
+#include <Utils.hpp>
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -16,18 +17,11 @@
 
 static auto seed = unsigned(std::time(0));
 
-static double _rand(double min = 0, double max = 1) {
-    double f = ((double)rand()) / ((double)RAND_MAX);
-    return min + f * (max - min);
-}
-
 // to shuffle is the same order at runtime
 static void _no_random_shuffle(std::vector<double>& vec) {
     std::srand(seed);
-    std::random_shuffle(vec.begin(), vec.end());
+    ml::random_shuffle<double>(vec);
 }
-
-bool double_equals(double a, double b, double epsilon = 0.001) { return std::abs(a - b) < epsilon; }
 
 static bool CheckModel(const int flag,
                        const bool is_classification,
@@ -61,8 +55,8 @@ static bool CheckModel(const int flag,
 
     bool valid = true;
     for (int i = 0; i < predict_sample_count; i++) {
-        valid = valid && double_equals(results[i], predict_outputs[i]);
-        if (!double_equals(results[i], predict_outputs[i])) {
+        valid = valid && ml::double_equals(results[i], predict_outputs[i]);
+        if (!ml::double_equals(results[i], predict_outputs[i])) {
             // std::cout << std::setprecision(5) << results[i] << " == " << std::setprecision(5) << predict_outputs[i] << "\n";
         }
     }
@@ -124,7 +118,7 @@ static void LinearMultiple(int flag) {
     const int sample_count = 100;
 
     std::vector<double> inputs(200);
-    std::generate(inputs.begin(), inputs.end(), [i = 0]() mutable { return (_rand() * 0.9) + ((i++ < 100) ? 1 : 2); });
+    std::generate(inputs.begin(), inputs.end(), [i = 0]() mutable { return (ml::rand() * 0.9) + ((i++ < 100) ? 1 : 2); });
 
     std::vector<double> outputs(100);
     std::generate(outputs.begin(), outputs.end(), [j = 0]() mutable { return (j++ < 50) ? 1 : -1; });
@@ -147,8 +141,8 @@ static void Cross(int flag) {
     std::vector<double> inputs(1000);
     std::vector<double> outputs(500);
     for (int i = 0, j = 0; i < sample_count; i++, j += 2) {
-        inputs[j] = _rand(-1, 1);
-        inputs[j + 1] = _rand(-1, 1);
+        inputs[j] = ml::rand(-1, 1);
+        inputs[j + 1] = ml::rand(-1, 1);
 
         outputs[i] = (std::abs(inputs[j]) <= 0.3 || std::abs(inputs[j + 1]) <= 0.3) ? 1 : -1;
     }
@@ -163,8 +157,8 @@ static void MultiLinear3Classes(int flag) {
     std::vector<double> outputs(1500);
 
     for (int i = 0, j = 0, k = 0; i < sample_count; i++, j += 2, k += 3) {
-        inputs[j] = _rand(-1, 1);
-        inputs[j + 1] = _rand(-1, 1);
+        inputs[j] = ml::rand(-1, 1);
+        inputs[j + 1] = ml::rand(-1, 1);
 
         std::vector<double> res;
         if (-inputs[j] - inputs[j + 1] - 0.5 > 0 && inputs[j + 1] < 0 && inputs[j] - inputs[j + 1] - 0.5 < 0) {
@@ -188,8 +182,8 @@ static void MultiCross(int flag) {
     std::vector<double> inputs(2000);
     std::vector<double> outputs(3000);
     for (int i = 0, j = 0, k = 0; i < sample_count; i++, j += 2, k += 3) {
-        inputs[j] = _rand(-1, 1);
-        inputs[j + 1] = _rand(-1, 1);
+        inputs[j] = ml::rand(-1, 1);
+        inputs[j + 1] = ml::rand(-1, 1);
 
         std::vector<double> res;
         if (std::abs(std::fmod(inputs[j], 0.5)) <= 0.25 && std::abs(std::fmod(inputs[j + 1], 0.5)) > 0.25) {

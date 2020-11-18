@@ -11,7 +11,7 @@ file(GLOB_RECURSE PROJECT_TEST_SOURCES "${CMAKE_SOURCE_DIR}/test/src/*.cpp")
 add_executable(${TEST_MAIN} ${PROJECT_TEST_SOURCES})
 
 # Link the executable to library.
-target_link_libraries(${TEST_MAIN} PRIVATE ${LIBRARY_NAME})
+target_link_libraries(${TEST_MAIN} PRIVATE ${LIBRARY_NAME}Obj)
 
 set_target_properties(${TEST_MAIN} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}
