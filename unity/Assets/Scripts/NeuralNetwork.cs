@@ -31,7 +31,7 @@ public class NeuralNetwork : MonoBehaviour
 
     private void Start() {
         // Init model
-        IntPtr model = LoadLibrary.CreateModel((int)Flag.LinearModel, numInputs);
+        IntPtr model = LoadLibrary.CreateModel((int)Flag.LinearModel, numInputs, true);
 
         IntPtr inputs_ptr = ConvertManagedToUnmanaged(inputs);
         IntPtr outputs_ptr = ConvertManagedToUnmanaged(outputs);
@@ -52,7 +52,7 @@ public class NeuralNetwork : MonoBehaviour
         Debug.Log("... End Results ...");
         IntPtr Result = Marshal.AllocCoTaskMem(sizeof(double) * 3);
         // On predit sur les cas de test pour debuger
-        LoadLibrary.Predict(model, inputs_ptr, numInputs, Result, 3); 
+        LoadLibrary.Predict(model, trainingSet_Size, inputs_ptr, numInputs, Result, numOutputs); 
         DebugUnmanagedList(Result, 3);
 
 

@@ -348,7 +348,7 @@ MonoBehaviour:
   - 3
   outputs:
   - 1
-  - 0
-  - 1
+  - -1
+  - -1
   epochs: 1000
   learningRate: 0.5

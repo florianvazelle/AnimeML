@@ -1,7 +1,8 @@
 #pragma once
 
-#include <vector>
+#include <algorithm>
 #include <random>
+#include <vector>
 
 namespace ml {
     static double rand(double min = 0, double max = 1) {
@@ -16,4 +17,4 @@ namespace ml {
     }
 
     static inline bool double_equals(double a, double b, double epsilon = 0.001) { return std::abs(a - b) < epsilon; }
-};
+};  // namespace ml
