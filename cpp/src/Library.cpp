@@ -2,13 +2,20 @@
 
 #include <LinearModel.hpp>
 
+static Eigen::MatrixXd ConvertToEigenMatrix(const double* data, int x_dim, int y_dim) {
+    Eigen::MatrixXd matrix_data(x_dim, y_dim);
+    for (int i = 0; i < x_dim; ++i)
+        matrix_data.row(i) = Eigen::VectorXd::Map(&data[i * y_dim], y_dim);
+    return matrix_data;
+}
+
 /**
  * Allow to create a model pointer
  *
  * @param flag Is the type of the model
  * @param weights_count Is the number of ...
  */
-DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, bool is_classification) { 
+DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, bool is_classification) {
     switch (flag) {
         case 0:
             return new LinearModel(weights_count, is_classification);
@@ -17,7 +24,7 @@ DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, bool is_classifica
     }
     throw("Not a valid flag!");
 }
-    
+
 /**
  * Train the neural network model through a process of trial and error.
  * Adjusting the weights each time.
@@ -34,16 +41,19 @@ DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, bool is_classifica
  * @param learning_rate
  */
 DLLEXPORT void Train(BaseModel* model,
-                    int sample_count,
-                    const double* train_inputs,
-                    int inputs_size,
-                    const double* train_outputs,
-                    int outputs_size,
-                    int epochs,
-                    double learning_rate) {
-    model->train(sample_count, train_inputs, inputs_size, train_outputs, outputs_size, epochs, learning_rate);
+                     int sample_count,
+                     const double* train_inputs,
+                     int inputs_size,
+                     const double* train_outputs,
+                     int outputs_size,
+                     int epochs,
+                     double learning_rate) {
+    Eigen::MatrixXd inMatrix = ConvertToEigenMatrix(train_inputs, sample_count, inputs_size);
+    Eigen::MatrixXd outMatrix = ConvertToEigenMatrix(train_outputs, sample_count, outputs_size);
+
+    model->train(inMatrix, outMatrix, epochs, learning_rate);
 }
-    
+
 /**
  * Use a trained model to predict value
  *
@@ -53,8 +63,17 @@ DLLEXPORT void Train(BaseModel* model,
  * @param outputs Is the output predicted by the model, (normally empty)
  * @param outputs_size Is the size of one set of output
  */
-DLLEXPORT void Predict(BaseModel* model, int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size) {
-    model->predict(sample_count, inputs, inputs_size, outputs, outputs_size);
+DLLEXPORT void Predict(BaseModel* model, const int sample_count, const double* inputs, const int inputs_size, double* outputs, const int outputs_size) {
+    Eigen::MatrixXd inMatrix = ConvertToEigenMatrix(inputs, sample_count, inputs_size);
+    Eigen::MatrixXd outMatrix(sample_count, outputs_size);
+    
+    model->predict(inMatrix, outMatrix);
+
+    for (int i = 0; i < sample_count; i++) {
+        for (int j = 0; j < outputs_size; j++) {
+            outputs[i * outputs_size + j] = outMatrix(i, j);
+        }
+    }
 }
 
 DLLEXPORT double* GetWeigths(BaseModel* model) { return model->getWeigths(); }

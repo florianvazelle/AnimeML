@@ -1,8 +1,8 @@
 
 #include <doctest/doctest.h>
 
-#include <LinearModel.hpp>
 #include <Library.hpp>
+#include <LinearModel.hpp>
 #include <Utils.hpp>
 #include <algorithm>
 #include <cmath>
@@ -56,9 +56,9 @@ static bool CheckModel(const int flag,
     bool valid = true;
     for (int i = 0; i < predict_sample_count; i++) {
         valid = valid && ml::double_equals(results[i], predict_outputs[i]);
-        if (!ml::double_equals(results[i], predict_outputs[i])) {
-            // std::cout << std::setprecision(5) << results[i] << " == " << std::setprecision(5) << predict_outputs[i] << "\n";
-        }
+        // if (!ml::double_equals(results[i], predict_outputs[i])) {
+        //     std::cout << std::setprecision(5) << results[i] << " == " << std::setprecision(5) << predict_outputs[i] << "\n";
+        // }
     }
 
     DeleteModel(model);
@@ -226,7 +226,7 @@ static void NonLinearSimple2D(int flag) {
     std::vector<double> inputs({1, 2, 3});
     std::vector<double> outputs({2, 3, 2.5});
 
-    CHECK(CheckModelWithSameTrainPredict(flag, false, sample_count, inputs, outputs));
+    CHECK(!CheckModelWithSameTrainPredict(flag, false, sample_count, inputs, outputs));
 }
 
 static void LinearSimple3D(int flag) {

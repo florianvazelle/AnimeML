@@ -1,7 +1,8 @@
 #include <LinearModel.hpp>
 
-#include <algorithm>
+#include <Eigen/Dense>
 #include <Utils.hpp>
+#include <algorithm>
 #include <cstring>
 #include <iostream>
 #include <iterator>
@@ -10,66 +11,80 @@
 
 LinearModel::LinearModel(int weights_count, bool is_classification) : BaseModel(weights_count, is_classification) {
     weights = new double[weights_count + 1];
-    // Init all weights and biases between 0.0 and 1.0
+    // Init all weights and biases between -1.0 and 1.0
     for (int i = 0; i < weights_count + 1; i++) {
-        weights[i] = 2 * (((double)rand()) / RAND_MAX) - 1;
-        // rand() / (double)RAND_MAX * 2.0 - 1.0;
+        weights[i] = ml::rand(-1, 1);
     }
 }
 
-double LinearModel::_update_weight(double learning_rate, double target_value, double actual_value, double entry_value) const {
-    double error = actual_value - target_value;
+void LinearModel::train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& train_outputs, int epochs, double learning_rate) {
+    const size_t sample_count = train_inputs.rows();
+    const size_t inputs_size = train_inputs.cols();
+    const size_t outputs_size = train_outputs.cols();
+
     if (is_classification) {
-        error *= (actual_value * actual_value);
-    }
+        std::vector<int> trainingSetOrder(sample_count);
 
-    return (learning_rate * error * entry_value);
-}
+        for (int i = 0; i < trainingSetOrder.size(); i++) {
+            trainingSetOrder[i] = i;
+        }
 
-void LinearModel::train(int sample_count, const double* train_inputs, int inputs_size, const double* train_outputs, int outputs_size, int epochs, double learning_rate) {
-    std::vector<int> trainingSetOrder(sample_count);
+        Eigen::MatrixXd activation(sample_count, outputs_size);
 
-    for (int i = 0; i < trainingSetOrder.size(); i++) {
-        trainingSetOrder[i] = i;
-    }
-
-    // Iterate with epochs
-    for (int i = 0; i < epochs; i++) {
-        // shuffle the training set
-        ml::random_shuffle<int>(trainingSetOrder);
-
-        // for each training set
-        for (int j = 0; j < sample_count; j++) {
-            // select a training set ID
-            int trainingSetID = trainingSetOrder[j];
-
-            // create a copy of the inputs of the set
-            std::vector<double> setInputs(inputs_size);
-            for (int k = 0; k < setInputs.size(); k++) {
-                setInputs[k] = train_inputs[(trainingSetID * inputs_size) + k];
-            }
-
-            // create a copy of the outputs of the set
-            std::vector<double> setOutputs(outputs_size);
-            for (int k = 0; k < setOutputs.size(); k++) {
-                setOutputs[k] = train_outputs[(trainingSetID * outputs_size) + k];
-            }
-
+        // Iterate with epochs
+        for (int i = 0; i < epochs; i++) {
             // *** Predict Function ***
 
             // compute activation fonction
-            std::vector<double> activation(outputs_size);
-            predict(1, setInputs.data(), inputs_size, activation.data(), outputs_size);
+            predict(train_inputs, activation);  // or `predict(train_inputs.row(trainingSetID), activation);` in trainingSetOrder loops to predict by row
 
-            // *** Learn Function ***
+            // shuffle the training set
+            ml::random_shuffle<int>(trainingSetOrder);
 
-            // Backpropagation of error on weights / Adjust the weights
-            for (int k = 0; k < outputs_size; k++) {  // One unique output
-                for (int l = 0; l < inputs_size; l++) {
-                    weights[l] -= _update_weight(learning_rate, setOutputs[k], activation[k], setInputs[l]);
+            // for each training set
+            for (int j = 0; j < trainingSetOrder.size(); j++) {
+                // select a training set ID
+                int trainingSetID = trainingSetOrder[j];
+
+                // *** Learn Function ***
+
+                // Backpropagation of error on weights / Adjust the weights
+                for (int k = 0; k < outputs_size; k++) {
+                    const double target_value = train_outputs(trainingSetID, k);
+                    const double actual_value = activation(trainingSetID, k);
+
+                    double error = actual_value - target_value;
+                    if (is_classification) {
+                        error *= (actual_value * actual_value);
+                    }
+
+                    for (int l = 0; l < inputs_size; l++) {
+                        const double entry_value = train_inputs(trainingSetID, l);
+
+                        weights[l] -= (learning_rate * error * entry_value);
+                    }
+                    weights[weights_count] -= (learning_rate * error * 1);  // bias
                 }
-                weights[weights_count] -= _update_weight(learning_rate, setOutputs[k], activation[k], 1);
             }
+        }
+    } else {
+        // Add a column of one (at the right), for the bias
+        Eigen::MatrixXd tmp(train_inputs.rows(), train_inputs.cols() + 1);
+        Eigen::VectorXd vec(train_inputs.rows());
+        for (int i = 0; i < train_inputs.rows(); i++) {
+            vec(i) = 1;
+        }
+        tmp << train_inputs, vec;
+
+        // Compute the transpose
+        Eigen::MatrixXd inputs_transposed = tmp.transpose();
+        Eigen::MatrixXd inv_inputs_transposed = (inputs_transposed * tmp).completeOrthogonalDecomposition().pseudoInverse();
+
+        // Compute weights
+        Eigen::MatrixXd w = inv_inputs_transposed * inputs_transposed * train_outputs;
+
+        for (int i = 0; i < inputs_size + 1; i++) {
+            weights[i] = w(i, 0);
         }
     }
 }
@@ -83,19 +98,21 @@ double LinearModel::_activation(double value) const {
     }
 }
 
-void LinearModel::predict(int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size) const {
-    for (int j = 0; j < sample_count; j++) {
+void LinearModel::predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs) const {
+    assert(inputs.rows() == outputs.rows());  // or maybe resize outputs
+
+    for (int i = 0; i < inputs.rows(); i++) {
         // Loop on outputs (here we have only one output)
-        for (int k = 0; k < outputs_size; k++) {
+        for (int j = 0; j < outputs.cols(); j++) {
             double activation = weights[weights_count];
 
             // Loop on inputs
-            for (int l = 0; l < inputs_size; l++) {
-                activation += inputs[j * inputs_size + l] * weights[l];
+            for (int k = 0; k < inputs.cols(); k++) {
+                activation += inputs(i, k) * weights[k];
             }
 
             // compute the _sigmoid of the activation
-            outputs[j * outputs_size + k] = _activation(activation);
+            outputs(i, j) = _activation(activation);
         }
     }
 }

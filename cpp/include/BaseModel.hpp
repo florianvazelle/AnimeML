@@ -2,6 +2,7 @@
 #define BASEMODEL_HPP
 
 #include <math.h> /* exp */
+#include <Eigen/Dense>
 #include <fstream>
 #include <vector>
 
@@ -13,8 +14,8 @@ class BaseModel {
 
     inline double* getWeigths() const { return weights; }
 
-    virtual void train(int sample_count, const double* train_inputs, int inputs_size, const double* train_outputs, int output_size, int epochs, double learning_rate) = 0;
-    virtual void predict(int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size) const = 0;
+    virtual void train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& train_outputs, int epochs, double learning_rate) = 0;
+    virtual void predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs) const = 0;
 
   protected:
     double* weights;
