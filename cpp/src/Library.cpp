@@ -78,6 +78,9 @@ DLLEXPORT void Predict(BaseModel* model, const int sample_count, const double* i
 
 DLLEXPORT double* GetWeigths(BaseModel* model) { return model->getWeigths(); }
 
+DLLEXPORT void SaveModel(BaseModel* model, const char* path) { model->save(path); }
+DLLEXPORT void LoadModel(BaseModel* model, const char* path) { model->load(path); }
+
 /**
  * Expose Library methods.
  *

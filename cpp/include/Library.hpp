@@ -25,6 +25,8 @@ extern "C"
     DLLEXPORT void Train(BaseModel* model, int sample_count, const double* train_inputs, int inputs_size, const double* train_outputs, int outputs_size, int epochs, double learning_rate);
     DLLEXPORT void Predict(BaseModel* model, int sample_count, const double* inputs, int inputs_size, double* outputs, int outputs_size);
     DLLEXPORT double* GetWeigths(BaseModel* model);
+    DLLEXPORT void SaveModel(BaseModel* model, const char* path);
+    DLLEXPORT void LoadModel(BaseModel* model, const char* path);
     DLLEXPORT void DeleteModel(BaseModel* model);
 };
 

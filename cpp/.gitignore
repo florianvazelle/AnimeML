@@ -39,3 +39,6 @@ out/
 # IDE
 .vscode/
 .vs/
+
+# Custom
+test_model.csv

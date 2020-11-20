@@ -9,13 +9,17 @@
 class BaseModel {
   public:
     BaseModel(int weights_count, bool is_classification) : weights_count(weights_count), is_classification(is_classification) {}
-    BaseModel(std::string filename = "model.csv");
     virtual ~BaseModel() { delete[] weights; }
 
     inline double* getWeigths() const { return weights; }
 
     virtual void train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& train_outputs, int epochs, double learning_rate) = 0;
     virtual void predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs) const = 0;
+
+    // npl is an array of number of weight by layer (for example: npl = [4, 3, 3,
+    // 2], the first layer have 4 weigth, the second have 3 weight ...)
+    void save(const char* path = "./model.csv") const;
+    void load(const char* path = "./model.csv");
 
   protected:
     double* weights;
@@ -33,10 +37,6 @@ class BaseModel {
     inline double _sigmoid_derivative(double x) const { return x * (1 - x); }
 
     void debuglog(std::string msg);
-
-    // npl is an array of number of weight by layer (for example: npl = [4, 3, 3,
-    // 2], the first layer have 4 weigth, the second have 3 weight ...)
-    void save(std::vector<int> npl, std::string filename = "model.csv") const;
 };
 
 #endif
