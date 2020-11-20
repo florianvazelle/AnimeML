@@ -27,5 +27,11 @@ public static class LoadLibrary
     public static extern IntPtr GetWeigths(IntPtr model);
 
     [DllImport("example")]
+    public static extern void SaveModel(IntPtr model, string path);
+
+    [DllImport("example")]
+    public static extern void LoadModel(IntPtr model, string path);
+
+    [DllImport("example")]
     public static extern void DeleteModel(IntPtr model);
 }

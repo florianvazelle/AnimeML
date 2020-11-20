@@ -5,9 +5,6 @@ using System.Linq;
 using System.Drawing;
 using System.Collections.Generic;
 
-// Needs to match the c++ order
-enum Flag { LinearModel, MLP };
-
 public class NeuralNetwork : MonoBehaviour
 {
     public const int trainingSet_Size = 3;
@@ -31,7 +28,7 @@ public class NeuralNetwork : MonoBehaviour
 
     private void Start() {
         // Init model
-        IntPtr model = LoadLibrary.CreateModel((int)Flag.LinearModel, numInputs, true);
+        IntPtr model = LoadLibrary.CreateModel((int)Interface.ModelType.Linear, numInputs, true);
 
         IntPtr inputs_ptr = ConvertManagedToUnmanaged(inputs);
         IntPtr outputs_ptr = ConvertManagedToUnmanaged(outputs);
@@ -73,7 +70,7 @@ public class NeuralNetwork : MonoBehaviour
      * Helpers Methods
      */
 
-    static IntPtr ConvertManagedToUnmanaged(double[] data) {
+    public static IntPtr ConvertManagedToUnmanaged(double[] data) {
         // create the ptr for the DLL
         IntPtr ptr = Marshal.AllocCoTaskMem(sizeof(double) * data.Length);
 
@@ -83,13 +80,13 @@ public class NeuralNetwork : MonoBehaviour
         return ptr;
     }
 
-    static void DebugUnmanagedList(IntPtr unmanagedList, int size) {
+    public static void DebugUnmanagedList(IntPtr unmanagedList, int size) {
         double[] managedList = new double[size];
         Marshal.Copy(unmanagedList, managedList, 0, size);
         DebugList<double>(managedList);
     }
 
-    static void DebugList<T>(IList<T> list) {
+    public static void DebugList<T>(IList<T> list) {
         foreach (T item in list) {
             Debug.Log(item);
         }

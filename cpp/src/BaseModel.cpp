@@ -38,6 +38,7 @@ void BaseModel::load(const char* path) {
     std::vector<double> tmp;
     int i = 0;
 
+    std::setlocale(LC_NUMERIC, "C");
     std::ifstream data(path);
     std::string line;
 
