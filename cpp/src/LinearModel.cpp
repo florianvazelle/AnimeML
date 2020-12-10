@@ -67,7 +67,7 @@ void LinearModel::train(const Eigen::MatrixXd& train_inputs, const Eigen::Matrix
                 }
             }
         }
-    } else {
+    } else { // to be verified
         // Add a column of one (at the right), for the bias
         Eigen::MatrixXd tmp(train_inputs.rows(), train_inputs.cols() + 1);
         Eigen::VectorXd vec(train_inputs.rows());

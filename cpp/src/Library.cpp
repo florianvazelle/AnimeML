@@ -19,8 +19,8 @@ DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, bool is_classifica
     switch (flag) {
         case 0:
             return new LinearModel(weights_count, is_classification);
-            // case 1:
-            //     return new MLP{};
+        // case 1:
+        //     return new MLP{};
     }
     throw("Not a valid flag!");
 }
@@ -28,7 +28,7 @@ DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, bool is_classifica
 /**
  * Train the neural network model through a process of trial and error.
  * Adjusting the weights each time.
- *
+ * Convert inputs and outputs in matrix
  * @param model Is the pointer to the model
  * @param sample_count Is the number of training input
  * @param train_inputs Are the training input data
@@ -40,6 +40,7 @@ DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, bool is_classifica
  * @param epochs
  * @param learning_rate
  */
+
 DLLEXPORT void Train(BaseModel* model,
                      int sample_count,
                      const double* train_inputs,

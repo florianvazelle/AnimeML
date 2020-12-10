@@ -1,5 +1,6 @@
 #include <BaseModel.hpp>
 
+#include <clocale>
 #include <cassert>
 #include <fstream>
 #include <iostream>

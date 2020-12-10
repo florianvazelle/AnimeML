@@ -3,6 +3,7 @@
 #include <BaseModel.hpp>
 #include <Library.hpp>
 
+// Test pour savoir si la fonction de sauvegarde et load fonctionne bien
 TEST_CASE("Save/Load") {
     // *** Init and save ***
     BaseModel* model1 = CreateModel(0, 3, true);

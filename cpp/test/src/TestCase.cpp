@@ -15,14 +15,18 @@
 #include <random>
 #include <vector>
 
-static auto seed = unsigned(std::time(0));
+// This file is the test cases of the teacher
 
-// to shuffle is the same order at runtime
+static auto seed = unsigned(std::time(0)); // time(0) is time of runtime execution
+
+// To shuffle in the same order at each runtime
 static void _no_random_shuffle(std::vector<double>& vec) {
     std::srand(seed);
     ml::random_shuffle<double>(vec);
 }
 
+// This function create a model, train it and compare its results with the original results and see if it's equivalent
+// It need training In/out and different predict In/out to see if it is still a good model with unknown data
 static bool CheckModel(const int flag,
                        const bool is_classification,
                        const int train_sample_count,
@@ -66,6 +70,7 @@ static bool CheckModel(const int flag,
     return valid;
 }
 
+// Check if a model is good with the same In/Out as his training In/Out
 static bool CheckModelWithSameTrainPredict(const int flag,
                                            const bool is_classification,
                                            const int sample_count,
@@ -76,6 +81,7 @@ static bool CheckModelWithSameTrainPredict(const int flag,
     return CheckModel(flag, is_classification, sample_count, sample_count, inputs, outputs, inputs, outputs, epochs, learning_rate);
 }
 
+// Split samples to create known data and unknown data and check the model
 static bool CheckModelWithSplitTrainPredict(const int flag,
                                             const bool is_classification,
                                             const int sample_count,
@@ -97,6 +103,7 @@ static bool CheckModelWithSplitTrainPredict(const int flag,
                       learning_rate);
 }
 
+// Linear model with defined samples
 static void LinearSimple(int flag) {
     const int sample_count = 3;
 
@@ -114,6 +121,7 @@ static void LinearSimple(int flag) {
     CHECK(CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs, 100, 0.5));
 }
 
+// Linear model with generated samples
 static void LinearMultiple(int flag) {
     const int sample_count = 100;
 
@@ -126,6 +134,7 @@ static void LinearMultiple(int flag) {
     CHECK(CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs));
 }
 
+// Xor test
 static void XOR(int flag) {
     const int sample_count = 4;
 
