@@ -208,17 +208,17 @@ static void MultiCross(int flag) {
     CHECK(!CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs));
 }
 
-TEST_CASE("Classification") {
-    // For all Flags
-    for (int i = 0; i < 1; i++) {
-        SUBCASE("Linear Simple") { LinearSimple(i); }
-        SUBCASE("Linear Multiple") { LinearMultiple(i); }
-        SUBCASE("XOR") { XOR(i); }
-        SUBCASE("Cross") { Cross(i); }
-        SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(i); }
-        SUBCASE("Multi Cross") { MultiCross(i); }
-    }
-}
+// TEST_CASE("Classification") {
+//     // For all Flags
+//     for (int i = 0; i < 1; i++) {
+//         SUBCASE("Linear Simple") { LinearSimple(i); }
+//         SUBCASE("Linear Multiple") { LinearMultiple(i); }
+//         SUBCASE("XOR") { XOR(i); }
+//         SUBCASE("Cross") { Cross(i); }
+//         SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(i); }
+//         SUBCASE("Multi Cross") { MultiCross(i); }
+//     }
+// }
 
 static void LinearSimple2D(int flag) {
     const int sample_count = 2;
@@ -265,15 +265,19 @@ static void NonLinearSimple3D(int flag) {
     CHECK(!CheckModelWithSameTrainPredict(flag, false, sample_count, inputs, outputs));
 }
 
-TEST_CASE("Regression") {
-    // For all Flags
-    // std::cout << " ----------- \n";
+// TEST_CASE("Regression") {
+//     // For all Flags
+//     // std::cout << " ----------- \n";
 
-    for (int i = 0; i < 1; i++) {
-        SUBCASE("Linear Simple 2D") { LinearSimple2D(i); }
-        SUBCASE("Non Linear Simple 2D") { NonLinearSimple2D(i); }
-        SUBCASE("Linear Simple 3D") { LinearSimple3D(i); }
-        SUBCASE("Linear Tricky 3D") { LinearTricky3D(i); }
-        SUBCASE("Non Linear Simple 3D") { NonLinearSimple3D(i); }
-    }
+//     for (int i = 0; i < 1; i++) {
+//         SUBCASE("Linear Simple 2D") { LinearSimple2D(i); }
+//         SUBCASE("Non Linear Simple 2D") { NonLinearSimple2D(i); }
+//         SUBCASE("Linear Simple 3D") { LinearSimple3D(i); }
+//         SUBCASE("Linear Tricky 3D") { LinearTricky3D(i); }
+//         SUBCASE("Non Linear Simple 3D") { NonLinearSimple3D(i); }
+//     }
+// }
+
+TEST_CASE("MLP") {
+    SUBCASE("Linear Simple MLP") { LinearSimple(1); }
 }
