@@ -1,6 +1,8 @@
 #ifndef NEURON_HPP
 #define NEURON_HPP
 
+#include <vector>
+
 // struct to define links between Neurons
 struct Connection
 {
@@ -37,8 +39,5 @@ private:
     unsigned _myIndex;
     double _gradient;
 };
-
-double Neuron::learningRate = 0.15;
-double Neuron::alpha = 0.5;
 
 #endif

@@ -14,7 +14,7 @@ class BaseModel {
     inline double* getWeigths() const { return weights; }
 
     virtual void train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& train_outputs, int epochs, double learning_rate) = 0;
-    virtual void predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs) const = 0;
+    virtual void predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs) = 0;
 
     // npl is an array of number of weight by layer (for example: npl = [4, 3, 3,
     // 2], the first layer have 4 weigth, the second have 3 weight ...)

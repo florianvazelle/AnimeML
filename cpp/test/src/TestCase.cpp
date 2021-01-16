@@ -39,8 +39,8 @@ static bool CheckModel(const int flag,
                        const double learning_rate = 0.1) {
     const double EPSILON = 0.1;
 
-    const int input_size = train_inputs.size() / train_sample_count;
-    const int output_size = train_outputs.size() / train_sample_count;
+    const int input_size = (int)train_inputs.size() / train_sample_count;
+    const int output_size = (int)train_outputs.size() / train_sample_count;
 
     BaseModel* model = CreateModel(flag, input_size, is_classification);
 

@@ -98,7 +98,7 @@ double LinearModel::_activation(double value) const {
     }
 }
 
-void LinearModel::predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs) const {
+void LinearModel::predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs){
     assert(inputs.rows() == outputs.rows());  // or maybe resize outputs
 
     // for each sample

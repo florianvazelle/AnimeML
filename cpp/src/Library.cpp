@@ -1,6 +1,7 @@
 #include <Library.hpp>
 
 #include <LinearModel.hpp>
+#include <MLP.hpp>
 
 
 static Eigen::MatrixXd ConvertToEigenMatrix(const double* data, int x_dim, int y_dim) {
@@ -20,11 +21,12 @@ DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, bool is_classifica
     switch (flag) {
         case 0:
             return new LinearModel(weights_count, is_classification);
-        //case 1:
+        case 1:
             // std::vector<int> layers = {2, 1}; // last member "1" is th output layer
-            // return new MLP(layers, weights_count, is_classification);
+            std::vector<unsigned int> topology = {(unsigned int)weights_count, 2, 1};
+            return new MLP(topology, weights_count, is_classification);
     }
-    throw("Not a valid flag!");
+    //throw("Not a valid flag!");
     return nullptr;
 }
 
