@@ -41,7 +41,7 @@ static bool CheckModel(const int flag,
 
     const int input_size = (int)train_inputs.size() / train_sample_count;
     const int output_size = (int)train_outputs.size() / train_sample_count;
-
+    
     BaseModel* model = CreateModel(flag, input_size, is_classification);
 
     Train(model,                 // weights
@@ -53,7 +53,7 @@ static bool CheckModel(const int flag,
           epochs,                // number of epoch
           learning_rate          // learning rate
     );
-
+    std::cout << "Model Trained" << std::endl;
     std::vector<double> results(predict_sample_count * output_size);
     Predict(model, predict_sample_count, predict_inputs.data(), input_size, results.data(), output_size);
 

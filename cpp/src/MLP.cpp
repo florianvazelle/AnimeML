@@ -102,9 +102,9 @@ void MLP::train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& trai
                 for (int k = 0; k < train_outputs.cols(); k++) {
                     matrixOutputsVector.push_back(train_outputs(trainingSetOrder[j],k));
                 }
-                //std::cout << "toto" << std::endl;
+                std::cout << "just before backprop" << std::endl;
                 backProp(matrixOutputsVector); // pwoblem
-                
+                std::cout << "just after backprop" << std::endl;
             }
         }
     }
@@ -161,12 +161,11 @@ void MLP::backProp(const std::vector<double> &targetVals) {
         / (_recentAverageSmoothingFactor + 1.0);
 
     // Calculate output layer gradients
-    for (unsigned n = 0; n < outputLayer.size(); ++n) {
-        outputLayer.at(n).calcOutputGradients(targetVals.at(n));
+    for (unsigned n = 0; n < outputLayer.size() - 1; ++n) {
+        outputLayer[n].calcOutputGradients(targetVals[n]);
     }
-
+    
     // Calculate gradients on hidden layers
-
     for (unsigned layerNum = (unsigned)_layers.size() - 2; layerNum > 0; --layerNum) {
         Layer &hiddenLayer = _layers[layerNum]; // documentation purpose (can be optimize)
         Layer &nextLayer = _layers[layerNum + 1]; // documentation purpose (can be optimize)
