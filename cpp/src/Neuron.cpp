@@ -45,9 +45,11 @@ void Neuron::updateInputWeights(Layer &prevLayer){
     // in the neurons in the preceding layer
     for (unsigned n = 0; n < prevLayer.size(); ++n) {
         Neuron &neuron = prevLayer[n];
-        std::cout << "_myIndex : " << _myIndex << std::endl;
-        double oldDeltaWeight = neuron._outputWeights[_myIndex].deltaWeight;
-        std::cout << "tata" << std::endl;
+        std::cout << "1) prev layer neuron : " << n << std::endl;
+        std::cout << "myIndex : " << _myIndex << std::endl;
+        std::cout << "size of outputWeights : " << neuron._outputWeights.size() << std::endl; 
+        double oldDeltaWeight = neuron._outputWeights[_myIndex].deltaWeight; // ca merde
+        // std::cout << "2) prev layer neuron : " << n << std::endl;
         double newDeltaWeight = 
             // Individual input. magnified by the gradient an train rate;
             learningRate
@@ -59,8 +61,8 @@ void Neuron::updateInputWeights(Layer &prevLayer){
         
         neuron._outputWeights[_myIndex].deltaWeight = newDeltaWeight;
         neuron._outputWeights[_myIndex].weight += newDeltaWeight;
+       
     }
-    std::cout << "tutu" << std::endl;
 }
 
 double Neuron::activationFunction(double x){ // can be other activation functions

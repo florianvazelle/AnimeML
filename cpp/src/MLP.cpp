@@ -21,9 +21,6 @@ MLP::MLP(const std::vector<unsigned> &topology, int weights_count, bool is_class
         // add a bias neuron to the layer:
         for (unsigned neuronNum = 0; neuronNum <= topology[layerNum]; ++neuronNum)
         {
-            if (numOutputs == 0 && neuronNum == topology[layerNum]) {
-                continue;
-            }
             _layers.back().push_back(Neuron(numOutputs, neuronNum)); // ".back" last layer of vector
             std::cout << "Made a Neuron ! index : " << neuronNum << std::endl;
         }
@@ -163,16 +160,11 @@ void MLP::backProp(const std::vector<double> &targetVals) {
         ( _recentAverageError * _recentAverageSmoothingFactor + _error)
         / (_recentAverageSmoothingFactor + 1.0);
 
-    // std::cout << "titi" << std::endl;
     // Calculate output layer gradients
-
-    // std::cout << "outputLayer.size() -> " << outputLayer.size() << std::endl;
-    // std::cout << "targetVals.size() -> " << targetVals.size() << std::endl;
     for (unsigned n = 0; n < outputLayer.size(); ++n) {
         outputLayer.at(n).calcOutputGradients(targetVals.at(n));
     }
 
-    // std::cout << "tata" << std::endl;
     // Calculate gradients on hidden layers
 
     for (unsigned layerNum = (unsigned)_layers.size() - 2; layerNum > 0; --layerNum) {
@@ -186,14 +178,19 @@ void MLP::backProp(const std::vector<double> &targetVals) {
 
     // For all layers from outputs to first hidden layer,
         // update connection weights
+    // Loop from the last layer to the second
     for (unsigned layerNum = (unsigned)_layers.size() - 1; layerNum > 0; --layerNum) {
         Layer &layer = _layers[layerNum];
         Layer &prevLayer = _layers[layerNum - 1];
 
+        std::cout << "Layer num : " << layerNum << std::endl;
+        // Loop from the first neuron to the last
         for (unsigned n = 0; n < layer.size(); ++n) {
+            std::cout << "before weights updates" << std::endl;
             layer[n].updateInputWeights(prevLayer);
+            std::cout << "after weights updates" << std::endl;
         }
-        std::cout << "tete" << std::endl;
+        std::cout << "end Loop" << std::endl;
     }
     std::cout << "you have finish the world boss" << std::endl;
 }
