@@ -10,6 +10,7 @@ Neuron::Neuron(unsigned numOutputs, unsigned myIndex){
     for (unsigned c = 0; c < numOutputs; ++c) {
         _outputWeights.push_back(Connection());
         _outputWeights.back().weight = randomWeight();
+        std::cout << "First weight: " << _outputWeights.back().weight << std::endl;
     }
 
     _myIndex = myIndex;    
@@ -21,11 +22,16 @@ void Neuron::feedForward(const Layer &prevLayer){
     // Sum the previous layer's outputs
     // Include the bias node from the previous layer.
 
-    for (unsigned n = 0; n < prevLayer.size(); ++n) {
+    for (unsigned n = 0; n < prevLayer.size(); ++n) { // include the bias neuron
+        //std::cout << " ***************** prevLayer[n].getOutputVal(): " << prevLayer[n].getOutputVal();
+        //std::cout << " * prevLayer[n]._outputWeights[_myIndex].weight: " << prevLayer[n]._outputWeights[_myIndex].weight;
+        //std::cout << std::endl;
         sum += prevLayer[n].getOutputVal() * prevLayer[n]._outputWeights[_myIndex].weight;
     }
     
+    //std::cout << "sum of the previous layer: " << sum << std::endl;
     _outputVal = Neuron::activationFunction(sum);
+    //std::cout << sum << std::endl;
 }
 
 void Neuron::calcOutputGradients(double targetVal){
@@ -45,11 +51,8 @@ void Neuron::updateInputWeights(Layer &prevLayer){
     // in the neurons in the preceding layer
     for (unsigned n = 0; n < prevLayer.size(); ++n) {
         Neuron &neuron = prevLayer[n];
-        std::cout << "1) prev layer neuron : " << n << std::endl;
-        std::cout << "myIndex : " << _myIndex << std::endl;
-        std::cout << "size of outputWeights : " << neuron._outputWeights.size() << std::endl; 
+
         double oldDeltaWeight = neuron._outputWeights[_myIndex].deltaWeight; // ca merde
-        // std::cout << "2) prev layer neuron : " << n << std::endl;
         double newDeltaWeight = 
             // Individual input. magnified by the gradient an train rate;
             learningRate

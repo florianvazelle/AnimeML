@@ -22,8 +22,10 @@ MLP::MLP(const std::vector<unsigned> &topology, int weights_count, bool is_class
         for (unsigned neuronNum = 0; neuronNum <= topology[layerNum]; ++neuronNum)
         {
             _layers.back().push_back(Neuron(numOutputs, neuronNum)); // ".back" last layer of vector
-            std::cout << "Made a Neuron ! index : " << neuronNum << std::endl;
+            std::cout << "Made a Neuron ! index : " << neuronNum << " NumOutput: " << numOutputs << std::endl;
         }
+        // if it's a bias neuron, it must be initialize with 1 in outputval ! (otherwize it's never initialized)
+        _layers.back().back().setOutputVal(1.0);
     }
 }
 
@@ -46,7 +48,7 @@ void MLP::predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs){
         // std::cout << "res : " << std::endl;
 
         for(auto i : res) {
-            std::cout << i << std::endl;
+            std::cout << "Output Val: " << i << std::endl;
         }
         
         for(int k = 0; k < res.size(); k++) {
@@ -55,12 +57,12 @@ void MLP::predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs){
     }
 }
 
+// fill a vector with results of the Net
 void MLP::getResults(std::vector<double>& resultVals){
     resultVals.clear();
     unsigned int lastLayerSize = (unsigned)_layers[_layers.size() - 1].size(); // size with bias
     
-    std::cout << "last layer size : " << lastLayerSize << std::endl;
-
+    //std::cout << "last layer size : " << lastLayerSize << std::endl;
     for (unsigned i = 0; i < lastLayerSize - 1; ++i) { // - 1 for bias
         resultVals.push_back(_layers[_layers.size() - 1][i].getOutputVal());
     }
@@ -82,7 +84,7 @@ void MLP::train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& trai
 
         // Iterate with epochs
         for (int i = 0; i < epochs; i++) {
-            std::cout << "Tour : " << i << std::endl;
+            std::cout << "Turn : " << i << std::endl;
             //predict(train_inputs, activation);
 
             // shuffle the training set
@@ -92,19 +94,28 @@ void MLP::train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& trai
             for (int j = 0; j < trainingSetOrder.size(); j++) {
                 // chaque example -> forward -> backward
                 std::vector<double> matrixInputsVector;
+                std::vector<double> results;
+
                 for (int k = 0; k < train_inputs.cols(); k++) {
                     matrixInputsVector.push_back(train_inputs(trainingSetOrder[j],k));
                 }
                 feedForward(matrixInputsVector);
                 //feedForward(trainingSetOrder[j]);
 
+                // debug
+                std::cout << "Training set num: " << trainingSetOrder[j] << std::endl;
+                getResults(results);
+                for(unsigned i = 0; i < results.size(); i++)
+                {
+                    std::cout << results[i] << " ";
+                }
+                std::cout << "\n" << std::endl;
+
                 std::vector<double> matrixOutputsVector;
                 for (int k = 0; k < train_outputs.cols(); k++) {
                     matrixOutputsVector.push_back(train_outputs(trainingSetOrder[j],k));
                 }
-                std::cout << "just before backprop" << std::endl;
                 backProp(matrixOutputsVector); // pwoblem
-                std::cout << "just after backprop" << std::endl;
             }
         }
     }
@@ -130,6 +141,7 @@ void MLP::feedForward(const std::vector<double> &inputVals){
     // assign (latch) the input values into the input neurons
     for (unsigned i = 0; i < inputVals.size(); ++i) {
         _layers[0][i].setOutputVal(inputVals[i]);
+        std::cout << "set Input Val: " << _layers[0][i].getOutputVal() << std::endl;
     }
 
     // Forward propagate
@@ -137,6 +149,7 @@ void MLP::feedForward(const std::vector<double> &inputVals){
         Layer &prevLayer = _layers[layerNum - 1];
         for (unsigned n = 0; n < _layers[layerNum].size() - 1; ++n) {
             _layers[layerNum][n].feedForward(prevLayer);
+            //std::cout << "layer: " << layerNum << " Neuron: " << n << " Output val: " << _layers[layerNum][n].getOutputVal() << std::endl;
         }
     }
 }
@@ -164,7 +177,7 @@ void MLP::backProp(const std::vector<double> &targetVals) {
     for (unsigned n = 0; n < outputLayer.size() - 1; ++n) {
         outputLayer[n].calcOutputGradients(targetVals[n]);
     }
-    
+
     // Calculate gradients on hidden layers
     for (unsigned layerNum = (unsigned)_layers.size() - 2; layerNum > 0; --layerNum) {
         Layer &hiddenLayer = _layers[layerNum]; // documentation purpose (can be optimize)
@@ -181,17 +194,12 @@ void MLP::backProp(const std::vector<double> &targetVals) {
     for (unsigned layerNum = (unsigned)_layers.size() - 1; layerNum > 0; --layerNum) {
         Layer &layer = _layers[layerNum];
         Layer &prevLayer = _layers[layerNum - 1];
-
-        std::cout << "Layer num : " << layerNum << std::endl;
+        
         // Loop from the first neuron to the last
-        for (unsigned n = 0; n < layer.size(); ++n) {
-            std::cout << "before weights updates" << std::endl;
+        for (unsigned n = 0; n < layer.size() - 1; ++n) {
             layer[n].updateInputWeights(prevLayer);
-            std::cout << "after weights updates" << std::endl;
         }
-        std::cout << "end Loop" << std::endl;
     }
-    std::cout << "you have finish the world boss" << std::endl;
 }
 
 // not used (the activation fonciton is in Neuron class)

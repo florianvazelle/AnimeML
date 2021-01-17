@@ -23,7 +23,7 @@ DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, bool is_classifica
             return new LinearModel(weights_count, is_classification);
         case 1:
             // std::vector<int> layers = {2, 1}; // last member "1" is th output layer
-            std::vector<unsigned int> topology = {(unsigned int)weights_count, 2, 1};
+            std::vector<unsigned int> topology = {(unsigned int)weights_count, 3, 3, 1};
             return new MLP(topology, weights_count, is_classification);
     }
     //throw("Not a valid flag!");

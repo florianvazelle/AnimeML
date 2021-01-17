@@ -53,7 +53,7 @@ static bool CheckModel(const int flag,
           epochs,                // number of epoch
           learning_rate          // learning rate
     );
-    std::cout << "Model Trained" << std::endl;
+
     std::vector<double> results(predict_sample_count * output_size);
     Predict(model, predict_sample_count, predict_inputs.data(), input_size, results.data(), output_size);
 
@@ -113,12 +113,12 @@ static void LinearSimple(int flag) {
         3, 3   // 3th
     });
     std::vector<double> outputs({
-        1,   // 1st
-        -1,  // 2nd
-        -1   // 3th
+        1,   // 1st // 1
+        -1,  // 2nd // -1
+        -1   // 3th // -1
     });
 
-    CHECK(CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs, 100, 0.5));
+    CHECK(CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs, 1000, 0.5));
 }
 
 // Linear model with generated samples
