@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+// Image is a class that can manage picture functions like reading an resizing ...
 class Image {
   public:
     Image(char const* filename);

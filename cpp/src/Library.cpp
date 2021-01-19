@@ -75,6 +75,7 @@ DLLEXPORT void Predict(BaseModel* model, const int sample_count, const double* i
     
     model->predict(inMatrix, outMatrix);
 
+    // for each sample and each output 
     for (int i = 0; i < sample_count; i++) {
         for (int j = 0; j < outputs_size; j++) {
             outputs[i * outputs_size + j] = outMatrix(i, j);

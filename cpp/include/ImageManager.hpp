@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+// Class that manage pictures
 class ImageManager {
   public:
     ImageManager() : width(32), height(32) {}

@@ -34,7 +34,9 @@ public class Interface : MonoBehaviour {
             if (model != IntPtr.Zero) {
                 LoadLibrary.DeleteModel(model);
             }
-            if (modelType == 0) // MLP doesn't exist for now
+            if (modelType == ModelType.Linear) // MLP doesn't exist for now
+            model = LoadLibrary.CreateModel((int)modelType, 3, isClassification);
+            if (modelType == ModelType.MLP) // MLP doesn't exist for now
             model = LoadLibrary.CreateModel((int)modelType, 3, isClassification);
         }
 

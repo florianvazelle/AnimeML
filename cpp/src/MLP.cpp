@@ -47,12 +47,13 @@ void MLP::predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs){
 
         // std::cout << "res : " << std::endl;
 
-        for(auto i : res) {
-            std::cout << "Output Val: " << i << std::endl;
-        }
+        // for(auto i : res) {
+        //     std::cout << "Output Val: " << i << std::endl;
+        // }
         
         for(int k = 0; k < res.size(); k++) {
             outputs(i, k) = res[k];
+            //std::cout << "outputs(i, k): " << outputs(i, k) << std::endl;
         }
     }
 }
@@ -84,7 +85,7 @@ void MLP::train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& trai
 
         // Iterate with epochs
         for (int i = 0; i < epochs; i++) {
-            std::cout << "Turn : " << i << std::endl;
+            // std::cout << "Turn : " << i << std::endl;
             //predict(train_inputs, activation);
 
             // shuffle the training set
@@ -103,13 +104,13 @@ void MLP::train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& trai
                 //feedForward(trainingSetOrder[j]);
 
                 // debug
-                std::cout << "Training set num: " << trainingSetOrder[j] << std::endl;
+                // std::cout << "Training set num: " << trainingSetOrder[j] << std::endl;
                 getResults(results);
-                for(unsigned i = 0; i < results.size(); i++)
-                {
-                    std::cout << results[i] << " ";
-                }
-                std::cout << "\n" << std::endl;
+                // for(unsigned i = 0; i < results.size(); i++)
+                // {
+                //     std::cout << results[i] << " ";
+                // }
+                // std::cout << "\n" << std::endl;
 
                 std::vector<double> matrixOutputsVector;
                 for (int k = 0; k < train_outputs.cols(); k++) {
@@ -141,7 +142,7 @@ void MLP::feedForward(const std::vector<double> &inputVals){
     // assign (latch) the input values into the input neurons
     for (unsigned i = 0; i < inputVals.size(); ++i) {
         _layers[0][i].setOutputVal(inputVals[i]);
-        std::cout << "set Input Val: " << _layers[0][i].getOutputVal() << std::endl;
+        // std::cout << "set Input Val: " << _layers[0][i].getOutputVal() << std::endl;
     }
 
     // Forward propagate

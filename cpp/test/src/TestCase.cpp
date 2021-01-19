@@ -60,9 +60,9 @@ static bool CheckModel(const int flag,
     bool valid = true;
     for (int i = 0; i < predict_sample_count; i++) {
         valid = valid && ml::double_equals(results[i], predict_outputs[i]);
-        // if (!ml::double_equals(results[i], predict_outputs[i])) {
-        //     std::cout << std::setprecision(5) << results[i] << " == " << std::setprecision(5) << predict_outputs[i] << "\n";
-        // }
+        if (!ml::double_equals(results[i], predict_outputs[i])) {
+            std::cout << std::setprecision(5) << results[i] << " == " << std::setprecision(5) << predict_outputs[i] << "\n";
+        }
     }
 
     DeleteModel(model);
