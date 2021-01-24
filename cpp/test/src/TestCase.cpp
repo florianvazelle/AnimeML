@@ -141,7 +141,7 @@ static void XOR(int flag) {
     std::vector<double> inputs({1, 0, 0, 1, 0, 0, 1, 1});
     std::vector<double> outputs({1, 1, -1, -1});
 
-    CHECK(!CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs));
+    CHECK(CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs));
 }
 
 static void Cross(int flag) {
@@ -156,7 +156,7 @@ static void Cross(int flag) {
         outputs[i] = (std::abs(inputs[j]) <= 0.3 || std::abs(inputs[j + 1]) <= 0.3) ? 1 : -1;
     }
 
-    CHECK(!CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs));
+    CHECK(CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs));
 }
 
 static void MultiLinear3Classes(int flag) {
@@ -205,18 +205,23 @@ static void MultiCross(int flag) {
         outputs.insert(outputs.begin() + k, res.begin(), res.end());
     }
 
-    CHECK(!CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs));
+    CHECK(CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs));
 }
 
 // TEST_CASE("Classification") {
-//     // For all Flags
-//     for (int i = 0; i < 1; i++) {
-//         SUBCASE("Linear Simple") { LinearSimple(i); }
-//         SUBCASE("Linear Multiple") { LinearMultiple(i); }
-//         SUBCASE("XOR") { XOR(i); }
-//         SUBCASE("Cross") { Cross(i); }
-//         SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(i); }
-//         SUBCASE("Multi Cross") { MultiCross(i); }
+//     SUBCASE("Linear Model") {
+//         SUBCASE("Linear Simple") { LinearSimple(0); }
+//         SUBCASE("Linear Multiple") { LinearMultiple(0); }
+//         SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(0); }
+//     }
+
+//     SUBCASE("Multi Layer Perceptron") {
+//         SUBCASE("Linear Simple") { LinearSimple(1); }
+//         SUBCASE("Linear Multiple") { LinearMultiple(1); }
+//         SUBCASE("XOR") { XOR(1); }
+//         SUBCASE("Cross") { Cross(1); }
+//         SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(1); }
+//         SUBCASE("Multi Cross") { MultiCross(1); }
 //     }
 // }
 
@@ -235,7 +240,7 @@ static void NonLinearSimple2D(int flag) {
     std::vector<double> inputs({1, 2, 3});
     std::vector<double> outputs({2, 3, 2.5});
 
-    CHECK(!CheckModelWithSameTrainPredict(flag, false, sample_count, inputs, outputs));
+    CHECK(CheckModelWithSameTrainPredict(flag, false, sample_count, inputs, outputs));
 }
 
 static void LinearSimple3D(int flag) {
@@ -262,19 +267,22 @@ static void NonLinearSimple3D(int flag) {
     std::vector<double> inputs({1, 0, 0, 1, 1, 1, 0, 0});
     std::vector<double> outputs({2, 1, -2, -1});
 
-    CHECK(!CheckModelWithSameTrainPredict(flag, false, sample_count, inputs, outputs));
+    CHECK(CheckModelWithSameTrainPredict(flag, false, sample_count, inputs, outputs));
 }
 
 // TEST_CASE("Regression") {
-//     // For all Flags
-//     // std::cout << " ----------- \n";
+//     SUBCASE("Linear Model") {
+//         SUBCASE("Linear Simple 2D") { LinearSimple2D(0); }
+//         SUBCASE("Linear Simple 3D") { LinearSimple3D(0); }
+//         SUBCASE("Linear Tricky 3D") { LinearTricky3D(0); }
+//     }
 
-//     for (int i = 0; i < 1; i++) {
-//         SUBCASE("Linear Simple 2D") { LinearSimple2D(i); }
-//         SUBCASE("Non Linear Simple 2D") { NonLinearSimple2D(i); }
-//         SUBCASE("Linear Simple 3D") { LinearSimple3D(i); }
-//         SUBCASE("Linear Tricky 3D") { LinearTricky3D(i); }
-//         SUBCASE("Non Linear Simple 3D") { NonLinearSimple3D(i); }
+//     SUBCASE("Multi Layer Perceptron") {
+//         SUBCASE("Linear Simple 2D") { LinearSimple2D(1); }
+//         SUBCASE("Non Linear Simple 2D") { NonLinearSimple2D(1); }
+//         SUBCASE("Linear Simple 3D") { LinearSimple3D(1); }
+//         SUBCASE("Linear Tricky 3D") { LinearTricky3D(1); }
+//         SUBCASE("Non Linear Simple 3D") { NonLinearSimple3D(1); }
 //     }
 // }
 
