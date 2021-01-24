@@ -1,8 +1,9 @@
 #ifndef NEURON_HPP
 #define NEURON_HPP
 
-#include <vector>
+#include <Utils.hpp>
 #include <random>
+#include <vector>
 
 // struct to define links between Neurons
 struct Connection
@@ -36,7 +37,7 @@ public:
     static double alpha; // [0 -> n] multiplier of last weight change (momentum)
     static double activationFunction(double x);
     static double activationFunctionDerivative(double x);
-    static double randomWeight(void) { return std::rand() / double(RAND_MAX); }
+    static double randomWeight(void) { return ml::rand(-1, 1); }
     double sumDOW(const Layer &nextLayer) const;
     double _outputVal;
     double _gradient;

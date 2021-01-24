@@ -98,83 +98,41 @@ DLLEXPORT void LoadAsset() {
     ImageManager imageManager;
     std::vector<double> inputImagesPixels;
     std::vector<double> outputs;
-    int imgSize;
 
     // Load assets
     imageManager.loadAsset(inputImagesPixels, outputs);
-    for (unsigned i = 0; i < outputs.size(); i++) {
-        std::cout << "outputs[i] : " << outputs[i] << std::endl;
-    }
-    
-
-    std::cout << "inputImagesPixels.size() : " << inputImagesPixels.size() << " outputs.size() : " << outputs.size() << std::endl;
-
-    imgSize = (int)(inputImagesPixels.size() / outputs.size());
-    std::cout << "Size of one image: " << imgSize << std::endl;
 
     // Create a model
+    const int sample_count = outputs.size();
+    const int inputs_size = (int)(inputImagesPixels.size() / outputs.size());
 
     // hyper parameters
     unsigned numHiddenLayers = 4;
     unsigned numHiddenNeurons = 683;
 
     std::vector<unsigned> topology;
-    topology.push_back(imgSize);
+    topology.push_back(inputs_size);
     for (unsigned i = 0; i < numHiddenLayers; i++) {
         topology.push_back(numHiddenNeurons);
     }
     topology.push_back(1);
     
     //Debug display
-    for (size_t i = 0; i < topology.size(); i++) {
-        std::cout << topology[i] << std::endl;
+    std::cout << "topology : { ";
+    for (size_t i = 0; i < topology.size() - 1; i++) {
+        std::cout << topology[i] << ", ";
     }
-    
-    MLP *model = new MLP(topology, 0, true);
+    std::cout << topology.back() << " };\n";
 
-    Eigen::MatrixXd inputMatrix(outputs.size(), imgSize); // A(row, col)
-    Eigen::MatrixXd outputMatrix(outputs.size(), 1);
+    MLP* model = new MLP(topology, 0, true);
 
-    int count = 0;
-    //fill input Matrix
-    for (unsigned row = 0; row < inputMatrix.rows(); row++) {
-        for (unsigned col = 0; col < inputMatrix.cols(); col++) {
-            //inputMatrix(row, col) = (inputImagesPixels[(row * inputMatrix.cols()) + col] / 255) * 2 - 1;
-            inputMatrix(row, col) = inputImagesPixels[(row * inputMatrix.cols())];
-            count++;
-        }
-    }
+    Eigen::MatrixXd inputMatrix = ConvertToEigenMatrix(inputImagesPixels.data(), sample_count, inputs_size);
+    Eigen::MatrixXd outputMatrix = ConvertToEigenMatrix(outputs.data(), sample_count, 1);
 
-    std::cout << count << std::endl;
+    std::cout << "sample_count : " << sample_count << "\n";
+    std::cout << "inputs_size : " << inputs_size << "\n";
 
-    std::cout << "outputs.size() : " << outputs.size() << std::endl;
-    std::cout << "outputMatrix.rows() : " << outputMatrix.rows() << std::endl;
-
-    // for (unsigned i = 0; i < outputs.size(); i++) {
-    //     std::cout << "outputs[i] : " << outputs[i] << std::endl;
-    // }
-
-    //fill output Matrix
-    for (unsigned row = 0; row < outputs.size(); row++) {
-        outputMatrix(row, 0) = outputs[row];
-        std::cout << "outputMatrix(row, 0) : " << outputMatrix(row, 0) << std::endl;
-    }
-
-    // model->predict(inputMatrix, outputMatrix);
-
-    // for (unsigned row = 0; row < outputs.size(); row++) {
-    //     //outputMatrix(row, 0) = outputs[row];
-    //     std::cout << "outputMatrix(row, 0) : " << outputMatrix(row, 0) << std::endl;
-    // }
-
-    // for (unsigned i = 0; i < 10; i++) {
-    //     std::cout << "first neuron weigts : " << model. << std::endl;
-    // }
-    //     //outputMatrix(row, 0) = outputs[row];
-    //     std::cout << "outputMatrix(row, 0) : " << outputMatrix(row, 0) << std::endl;
-    // }
-    model->train(inputMatrix, outputMatrix, 100, 0.15);
-
+    // model->train(inputMatrix, outputMatrix, 10, 0.5);
     model->predict(inputMatrix, outputMatrix);
 
     DeleteModel(model);

@@ -31,7 +31,7 @@ void Neuron::feedForward(const Layer &prevLayer){
     }
     
     //std::cout << "sum of the previous layer: " << sum << std::endl;
-    _outputVal = Neuron::activationFunction(sum / (prevLayer.size() / 2) );
+    _outputVal = Neuron::activationFunction(sum);
     //_outputVal = Neuron::activationFunction(sum);
     //std::cout << "sum with activation: " << _outputVal << std::endl;
 }

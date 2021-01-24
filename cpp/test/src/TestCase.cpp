@@ -208,22 +208,22 @@ static void MultiCross(int flag) {
     CHECK(CheckModelWithSameTrainPredict(flag, true, sample_count, inputs, outputs));
 }
 
-// TEST_CASE("Classification") {
-//     SUBCASE("Linear Model") {
-//         SUBCASE("Linear Simple") { LinearSimple(0); }
-//         SUBCASE("Linear Multiple") { LinearMultiple(0); }
-//         SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(0); }
-//     }
+TEST_CASE("Classification") {
+    SUBCASE("Linear Model") {
+        SUBCASE("Linear Simple") { LinearSimple(0); }
+        SUBCASE("Linear Multiple") { LinearMultiple(0); }
+        // SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(0); }
+    }
 
-//     SUBCASE("Multi Layer Perceptron") {
-//         SUBCASE("Linear Simple") { LinearSimple(1); }
-//         SUBCASE("Linear Multiple") { LinearMultiple(1); }
-//         SUBCASE("XOR") { XOR(1); }
-//         SUBCASE("Cross") { Cross(1); }
-//         SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(1); }
-//         SUBCASE("Multi Cross") { MultiCross(1); }
-//     }
-// }
+    // SUBCASE("Multi Layer Perceptron") {
+    //     SUBCASE("Linear Simple") { LinearSimple(1); }
+    //     SUBCASE("Linear Multiple") { LinearMultiple(1); }
+    //     SUBCASE("XOR") { XOR(1); }
+    //     SUBCASE("Cross") { Cross(1); }
+    //     SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(1); }
+    //     SUBCASE("Multi Cross") { MultiCross(1); }
+    // }
+}
 
 static void LinearSimple2D(int flag) {
     const int sample_count = 2;
@@ -270,21 +270,21 @@ static void NonLinearSimple3D(int flag) {
     CHECK(CheckModelWithSameTrainPredict(flag, false, sample_count, inputs, outputs));
 }
 
-// TEST_CASE("Regression") {
-//     SUBCASE("Linear Model") {
-//         SUBCASE("Linear Simple 2D") { LinearSimple2D(0); }
-//         SUBCASE("Linear Simple 3D") { LinearSimple3D(0); }
-//         SUBCASE("Linear Tricky 3D") { LinearTricky3D(0); }
-//     }
+TEST_CASE("Regression") {
+    SUBCASE("Linear Model") {
+        SUBCASE("Linear Simple 2D") { LinearSimple2D(0); }
+        SUBCASE("Linear Simple 3D") { LinearSimple3D(0); }
+        SUBCASE("Linear Tricky 3D") { LinearTricky3D(0); }
+    }
 
-//     SUBCASE("Multi Layer Perceptron") {
-//         SUBCASE("Linear Simple 2D") { LinearSimple2D(1); }
-//         SUBCASE("Non Linear Simple 2D") { NonLinearSimple2D(1); }
-//         SUBCASE("Linear Simple 3D") { LinearSimple3D(1); }
-//         SUBCASE("Linear Tricky 3D") { LinearTricky3D(1); }
-//         SUBCASE("Non Linear Simple 3D") { NonLinearSimple3D(1); }
-//     }
-// }
+    // SUBCASE("Multi Layer Perceptron") {
+    //     SUBCASE("Linear Simple 2D") { LinearSimple2D(1); }
+    //     SUBCASE("Non Linear Simple 2D") { NonLinearSimple2D(1); }
+    //     SUBCASE("Linear Simple 3D") { LinearSimple3D(1); }
+    //     SUBCASE("Linear Tricky 3D") { LinearTricky3D(1); }
+    //     SUBCASE("Non Linear Simple 3D") { NonLinearSimple3D(1); }
+    // }
+}
 
 TEST_CASE("MLP") {
     // SUBCASE("Linear Simple MLP") { LinearSimple(1); }
