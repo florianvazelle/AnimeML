@@ -11,7 +11,9 @@
 #    define DLLEXPORT
 #endif
 
-#include <BaseModel.hpp>
+#include <LinearModel.hpp>
+#include <MLP.hpp>
+#include <ImageManager.hpp>
 
 /**
  * Expose Library methods.
@@ -28,6 +30,7 @@ extern "C"
     DLLEXPORT void SaveModel(BaseModel* model, const char* path);
     DLLEXPORT void LoadModel(BaseModel* model, const char* path);
     DLLEXPORT void DeleteModel(BaseModel* model);
+    DLLEXPORT void LoadAsset();
 };
 
 #endif

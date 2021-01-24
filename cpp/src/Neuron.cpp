@@ -10,7 +10,7 @@ Neuron::Neuron(unsigned numOutputs, unsigned myIndex){
     for (unsigned c = 0; c < numOutputs; ++c) {
         _outputWeights.push_back(Connection());
         _outputWeights.back().weight = randomWeight();
-        std::cout << "First weight: " << _outputWeights.back().weight << std::endl;
+        // std::cout << "First weight: " << _outputWeights.back().weight << std::endl;
     }
 
     _myIndex = myIndex;    
@@ -30,8 +30,9 @@ void Neuron::feedForward(const Layer &prevLayer){
     }
     
     //std::cout << "sum of the previous layer: " << sum << std::endl;
-    _outputVal = Neuron::activationFunction(sum);
-    //std::cout << sum << std::endl;
+    _outputVal = Neuron::activationFunction(sum / (prevLayer.size() / 2) );
+    //_outputVal = Neuron::activationFunction(sum);
+    //std::cout << "sum with activation: " << _outputVal << std::endl;
 }
 
 void Neuron::calcOutputGradients(double targetVal){

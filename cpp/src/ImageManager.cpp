@@ -35,6 +35,7 @@ void ImageManager::loadAsset(std::vector<double>& input_images, std::vector<doub
 
         input_images.insert(input_images.end(), img.begin(), img.end());
         outputs.push_back(isAnime);
+        std::cout << "isAnime : " << isAnime << std::endl; // Debug
     }
 
     // load all BD image
@@ -47,5 +48,6 @@ void ImageManager::loadAsset(std::vector<double>& input_images, std::vector<doub
 
         input_images.insert(input_images.end(), img.begin(), img.end());
         outputs.push_back(isBD);
+        std::cout << "isBD : " << isBD << std::endl; // Debug
     }
 }

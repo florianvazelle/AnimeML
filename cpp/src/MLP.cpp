@@ -22,7 +22,7 @@ MLP::MLP(const std::vector<unsigned> &topology, int weights_count, bool is_class
         for (unsigned neuronNum = 0; neuronNum <= topology[layerNum]; ++neuronNum)
         {
             _layers.back().push_back(Neuron(numOutputs, neuronNum)); // ".back" last layer of vector
-            std::cout << "Made a Neuron ! index : " << neuronNum << " NumOutput: " << numOutputs << std::endl;
+            //std::cout << "Made a Neuron ! index : " << neuronNum << " NumOutput: " << numOutputs << std::endl;
         }
         // if it's a bias neuron, it must be initialize with 1 in outputval ! (otherwize it's never initialized)
         _layers.back().back().setOutputVal(1.0);
@@ -47,9 +47,9 @@ void MLP::predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs){
 
         // std::cout << "res : " << std::endl;
 
-        // for(auto i : res) {
-        //     std::cout << "Output Val: " << i << std::endl;
-        // }
+        for(auto i : res) {
+            std::cout << "Output Val: " << i << std::endl;
+        }
         
         for(int k = 0; k < res.size(); k++) {
             outputs(i, k) = res[k];
@@ -85,7 +85,7 @@ void MLP::train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& trai
 
         // Iterate with epochs
         for (int i = 0; i < epochs; i++) {
-            // std::cout << "Turn : " << i << std::endl;
+            std::cout << "Turn : " << i << std::endl;
             //predict(train_inputs, activation);
 
             // shuffle the training set
@@ -150,7 +150,7 @@ void MLP::feedForward(const std::vector<double> &inputVals){
         Layer &prevLayer = _layers[layerNum - 1];
         for (unsigned n = 0; n < _layers[layerNum].size() - 1; ++n) {
             _layers[layerNum][n].feedForward(prevLayer);
-            //std::cout << "layer: " << layerNum << " Neuron: " << n << " Output val: " << _layers[layerNum][n].getOutputVal() << std::endl;
+            // std::cout << "layer: " << layerNum << " Neuron: " << n << " Output val: " << _layers[layerNum][n].getOutputVal() << std::endl;
         }
     }
 }

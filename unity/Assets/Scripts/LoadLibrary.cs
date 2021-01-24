@@ -34,4 +34,7 @@ public static class LoadLibrary
 
     [DllImport("example")]
     public static extern void DeleteModel(IntPtr model);
+
+    [DllImport("example")]
+    public static extern void LoadAsset(IntPtr inputImagesPixels, IntPtr inputImagesPixels_size, IntPtr outputs, IntPtr outputs_size);
 }

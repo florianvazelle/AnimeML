@@ -279,5 +279,6 @@ static void NonLinearSimple3D(int flag) {
 // }
 
 TEST_CASE("MLP") {
-    SUBCASE("Linear Simple MLP") { LinearSimple(1); }
+    // SUBCASE("Linear Simple MLP") { LinearSimple(1); }
+    SUBCASE("Load Image") { LoadAsset(); }
 }

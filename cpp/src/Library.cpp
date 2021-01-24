@@ -1,9 +1,5 @@
 #include <Library.hpp>
 
-#include <LinearModel.hpp>
-#include <MLP.hpp>
-
-
 static Eigen::MatrixXd ConvertToEigenMatrix(const double* data, int x_dim, int y_dim) {
     Eigen::MatrixXd matrix_data(x_dim, y_dim);
     for (int i = 0; i < x_dim; ++i)
@@ -86,6 +82,7 @@ DLLEXPORT void Predict(BaseModel* model, const int sample_count, const double* i
 DLLEXPORT double* GetWeigths(BaseModel* model) { return model->getWeigths(); }
 
 DLLEXPORT void SaveModel(BaseModel* model, const char* path) { model->save(path); }
+
 DLLEXPORT void LoadModel(BaseModel* model, const char* path) { model->load(path); }
 
 /**
@@ -95,3 +92,90 @@ DLLEXPORT void LoadModel(BaseModel* model, const char* path) { model->load(path)
  * elsewhere and uses the C-language calling convention.
  */
 DLLEXPORT void DeleteModel(BaseModel* model) { delete model; }
+
+// Load pictures and ouputs and pass them with pointers
+DLLEXPORT void LoadAsset() {
+    ImageManager imageManager;
+    std::vector<double> inputImagesPixels;
+    std::vector<double> outputs;
+    int imgSize;
+
+    // Load assets
+    imageManager.loadAsset(inputImagesPixels, outputs);
+    for (unsigned i = 0; i < outputs.size(); i++) {
+        std::cout << "outputs[i] : " << outputs[i] << std::endl;
+    }
+    
+
+    std::cout << "inputImagesPixels.size() : " << inputImagesPixels.size() << " outputs.size() : " << outputs.size() << std::endl;
+
+    imgSize = (int)(inputImagesPixels.size() / outputs.size());
+    std::cout << "Size of one image: " << imgSize << std::endl;
+
+    // Create a model
+
+    // hyper parameters
+    unsigned numHiddenLayers = 4;
+    unsigned numHiddenNeurons = 683;
+
+    std::vector<unsigned> topology;
+    topology.push_back(imgSize);
+    for (unsigned i = 0; i < numHiddenLayers; i++) {
+        topology.push_back(numHiddenNeurons);
+    }
+    topology.push_back(1);
+    
+    //Debug display
+    for (size_t i = 0; i < topology.size(); i++) {
+        std::cout << topology[i] << std::endl;
+    }
+    
+    MLP *model = new MLP(topology, 0, true);
+
+    Eigen::MatrixXd inputMatrix(outputs.size(), imgSize); // A(row, col)
+    Eigen::MatrixXd outputMatrix(outputs.size(), 1);
+
+    int count = 0;
+    //fill input Matrix
+    for (unsigned row = 0; row < inputMatrix.rows(); row++) {
+        for (unsigned col = 0; col < inputMatrix.cols(); col++) {
+            //inputMatrix(row, col) = (inputImagesPixels[(row * inputMatrix.cols()) + col] / 255) * 2 - 1;
+            inputMatrix(row, col) = inputImagesPixels[(row * inputMatrix.cols())];
+            count++;
+        }
+    }
+
+    std::cout << count << std::endl;
+
+    std::cout << "outputs.size() : " << outputs.size() << std::endl;
+    std::cout << "outputMatrix.rows() : " << outputMatrix.rows() << std::endl;
+
+    // for (unsigned i = 0; i < outputs.size(); i++) {
+    //     std::cout << "outputs[i] : " << outputs[i] << std::endl;
+    // }
+
+    //fill output Matrix
+    for (unsigned row = 0; row < outputs.size(); row++) {
+        outputMatrix(row, 0) = outputs[row];
+        std::cout << "outputMatrix(row, 0) : " << outputMatrix(row, 0) << std::endl;
+    }
+
+    model->predict(inputMatrix, outputMatrix);
+
+    // for (unsigned row = 0; row < outputs.size(); row++) {
+    //     //outputMatrix(row, 0) = outputs[row];
+    //     std::cout << "outputMatrix(row, 0) : " << outputMatrix(row, 0) << std::endl;
+    // }
+
+    // for (unsigned i = 0; i < 10; i++) {
+    //     std::cout << "first neuron weigts : " << model. << std::endl;
+    // }
+    //     //outputMatrix(row, 0) = outputs[row];
+    //     std::cout << "outputMatrix(row, 0) : " << outputMatrix(row, 0) << std::endl;
+    // }
+    model->train(inputMatrix, outputMatrix, 2, 0.15);
+
+    model->predict(inputMatrix, outputMatrix);
+
+    DeleteModel(model);
+}
