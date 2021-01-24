@@ -3,6 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#include <iostream>
 #include <stdexcept>
 
 Image::Image(char const* filename) {
@@ -13,9 +14,9 @@ Image::Image(char const* filename) {
 
         for (int i = 0; i < m_height * m_width; ++i) {
             int j = 4 * i;
-            m_pixels[i] = static_cast<double>(pixels[j + 1]);
-            // m_pixels[i + 1] = pixels[j + 2];
-            // m_pixels[i + 2] = pixels[j + 3];
+            // https://gigi.nullneuron.net/gigilabs/converting-an-image-to-grayscale-using-sdl2/
+            float color = (0.212671f * pixels[j + 3] + 0.715160f * pixels[j + 2] + 0.072169f * pixels[j + 1]) / 255.0f;
+            m_pixels[i] = static_cast<double>(color);
         }
 
         stbi_image_free(pixels);

@@ -160,7 +160,7 @@ DLLEXPORT void LoadAsset() {
         std::cout << "outputMatrix(row, 0) : " << outputMatrix(row, 0) << std::endl;
     }
 
-    model->predict(inputMatrix, outputMatrix);
+    // model->predict(inputMatrix, outputMatrix);
 
     // for (unsigned row = 0; row < outputs.size(); row++) {
     //     //outputMatrix(row, 0) = outputs[row];
@@ -173,7 +173,7 @@ DLLEXPORT void LoadAsset() {
     //     //outputMatrix(row, 0) = outputs[row];
     //     std::cout << "outputMatrix(row, 0) : " << outputMatrix(row, 0) << std::endl;
     // }
-    model->train(inputMatrix, outputMatrix, 2, 0.15);
+    model->train(inputMatrix, outputMatrix, 100, 0.15);
 
     model->predict(inputMatrix, outputMatrix);
 

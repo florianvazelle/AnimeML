@@ -47,8 +47,8 @@ void MLP::predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs){
 
         // std::cout << "res : " << std::endl;
 
-        for(auto i : res) {
-            std::cout << "Output Val: " << i << std::endl;
+        for(auto p : res) {
+            std::cout << "Output Val: " << p << std::endl;
         }
         
         for(int k = 0; k < res.size(); k++) {
@@ -206,4 +206,82 @@ void MLP::backProp(const std::vector<double> &targetVals) {
 // not used (the activation fonciton is in Neuron class)
 double MLP::_activation(double value) const {
     return 0;
+}
+
+// ****** Save & Load Stuff ******
+
+void MLP::save(const char* path) const {
+    StringBuffer s;
+    Writer<StringBuffer> writer(s);
+
+    writer.StartObject();
+    writer.Key("layers");
+
+    writer.StartArray();
+    for (const Layer& layer : _layers) {
+        writer.StartArray();
+        for (const Neuron& neuron : layer) {
+            writer.StartObject();
+            writer.Key("idx");
+            writer.Uint(neuron._myIndex);
+            writer.Key("outputWeights");
+            writer.StartArray();
+            for (const Connection& connection : neuron._outputWeights) {
+                writer.StartObject();
+                writer.Key("weight");
+                writer.Double(connection.weight);
+                writer.Key("deltaWeight");
+                writer.Double(connection.deltaWeight);
+                writer.EndObject();
+            }
+            writer.EndArray();
+            writer.EndObject();
+        }
+        writer.EndArray();
+    }
+    writer.EndArray();
+
+    writer.EndObject();
+
+    std::fstream fout;
+    fout.open(path, std::ios::out | std::ios::trunc);
+    fout << s.GetString();
+    fout.close();
+}
+
+void MLP::load(const char* path) {
+    _layers.clear();
+
+    std::setlocale(LC_NUMERIC, "C");
+    std::ifstream in(path);
+    std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+
+    Document document;
+    if (document.Parse(json.c_str()).HasParseError()) return;
+
+    assert(document.IsObject());
+    assert(document.HasMember("layers"));
+
+    const Value& jsonLayers = document["layers"];  // Using a reference for consecutive access is handy and faster.
+    assert(jsonLayers.IsArray());
+
+    Layer layer;
+    for (auto& l : jsonLayers.GetArray()) {
+        const Value& n = l["outputWeights"];
+
+        Neuron neuron(0, l["idx"].GetUint());
+        for (auto& c : n.GetArray()) {
+            Connection connection;
+            for (auto& w : c.GetArray()) {
+                connection.weight = w["weight"].GetDouble();
+                connection.deltaWeight = w["deltaWeight"].GetDouble();
+            }
+
+            neuron._outputWeights.push_back(connection);
+        }
+
+        layer.push_back(neuron);
+    }
+
+    _layers.push_back(layer);
 }

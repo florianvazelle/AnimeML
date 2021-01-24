@@ -2,6 +2,7 @@
 #define NEURON_HPP
 
 #include <vector>
+#include <random>
 
 // struct to define links between Neurons
 struct Connection
@@ -27,12 +28,15 @@ public:
     void calcHiddenGradients(const Layer &nextLayer);
     void updateInputWeights(Layer &prevLayer);
 
-private:
+    std::vector<Connection> _outputWeights;
+    unsigned _myIndex;
+
+  private:
     static double learningRate; // [0 -> 1] overall net training rate
     static double alpha; // [0 -> n] multiplier of last weight change (momentum)
     static double activationFunction(double x);
     static double activationFunctionDerivative(double x);
-    static double randomWeight(void) { return rand() / double(RAND_MAX); }
+    static double randomWeight(void) { return std::rand() / double(RAND_MAX); }
     double sumDOW(const Layer &nextLayer) const;
     double _outputVal;
     std::vector<Connection> _outputWeights;

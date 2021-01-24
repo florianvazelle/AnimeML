@@ -18,7 +18,7 @@ class ImageManager {
 
   private:
     int width, height;
-    const double isAnime = 0, isBD = 1;
+    const double isAnime = -1, isBD = 1;
 };
 
 #endif

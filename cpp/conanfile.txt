@@ -2,6 +2,7 @@
 doctest/2.4.0 
 stb/20200203
 eigen/3.3.8
+rapidjson/cci.20200410
 
 [generators]
 cmake

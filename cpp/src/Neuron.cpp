@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 double Neuron::learningRate {0.15};
 double Neuron::alpha = {0.5};
@@ -70,7 +71,7 @@ void Neuron::updateInputWeights(Layer &prevLayer){
 }
 
 double Neuron::activationFunction(double x){ // can be other activation functions
-    return tanh(x);
+    return std::tanh(x);
 }
 
 double Neuron::activationFunctionDerivative(double x){
