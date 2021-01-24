@@ -39,8 +39,6 @@ public:
     static double randomWeight(void) { return std::rand() / double(RAND_MAX); }
     double sumDOW(const Layer &nextLayer) const;
     double _outputVal;
-    std::vector<Connection> _outputWeights;
-    unsigned _myIndex;
     double _gradient;
 };
 
