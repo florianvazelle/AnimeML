@@ -267,20 +267,24 @@ void MLP::load(const char* path) {
 
     Layer layer;
     for (auto& l : jsonLayers.GetArray()) {
-        const Value& n = l["outputWeights"];
+        if (l.IsObject()) {
+            const Value& n = l["outputWeights"];
 
-        Neuron neuron(0, l["idx"].GetUint());
-        for (auto& c : n.GetArray()) {
-            Connection connection;
-            for (auto& w : c.GetArray()) {
-                connection.weight = w["weight"].GetDouble();
-                connection.deltaWeight = w["deltaWeight"].GetDouble();
+            Neuron neuron(0, l["idx"].GetUint());
+            for (auto& c : n.GetArray()) {
+                Connection connection;
+                for (auto& w : c.GetArray()) {
+                    if (w.IsObject()) {
+                        connection.weight = w["weight"].GetDouble();
+                        connection.deltaWeight = w["deltaWeight"].GetDouble();
+                    }
+                }
+
+                neuron._outputWeights.push_back(connection);
             }
 
-            neuron._outputWeights.push_back(connection);
+            layer.push_back(neuron);
         }
-
-        layer.push_back(neuron);
     }
 
     _layers.push_back(layer);

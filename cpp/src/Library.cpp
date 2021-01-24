@@ -13,14 +13,15 @@ static Eigen::MatrixXd ConvertToEigenMatrix(const double* data, int x_dim, int y
  * @param flag Is the type of the model
  * @param weights_count Is the number of ...
  */
-DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, bool is_classification) {
+DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, const unsigned* topology, int layers_count, bool is_classification) {
     switch (flag) {
         case 0:
             return new LinearModel(weights_count, is_classification);
         case 1:
-            // std::vector<int> layers = {2, 1}; // last member "1" is th output layer
-            std::vector<unsigned int> topology = {(unsigned int)weights_count, 3, 3, 1};
-            return new MLP(topology, weights_count, is_classification);
+            assert(weights_count == topology[0]);
+            std::vector<unsigned> dest(topology, topology + layers_count);
+
+            return new MLP(dest, weights_count, is_classification);
     }
     //throw("Not a valid flag!");
     return nullptr;
