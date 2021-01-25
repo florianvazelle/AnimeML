@@ -264,15 +264,17 @@ void MLP::load(const char* path) {
     const Value& allLayers = document["layers"];  // Using a reference for consecutive access is handy and faster.
     assert(allLayers.IsArray());
 
-    Layer layer;
     for (auto& l : allLayers.GetArray()) {
+        Layer layer;
         for (auto& n : l.GetArray()) {
             if (n.IsObject()) {
                 Neuron neuron(0, n["idx"].GetUint());
 
                 const Value& outputWeights = n["outputWeights"];
                 for (auto& c : outputWeights.GetArray()) {
+
                     Connection connection;
+                    
                     if (c.IsObject()) {
                         connection.weight = c["weight"].GetDouble();
                         connection.deltaWeight = c["deltaWeight"].GetDouble();
@@ -284,7 +286,7 @@ void MLP::load(const char* path) {
                 layer.push_back(neuron);
             }
         }
+        _layers.push_back(layer);
     }
 
-    _layers.push_back(layer);
 }
