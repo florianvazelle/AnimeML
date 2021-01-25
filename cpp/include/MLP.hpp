@@ -29,7 +29,7 @@ class MLP : virtual public BaseModel {
     double _activation(double value) const; // to delete
 
     void feedForward(const std::vector<double> &inputVals);
-    void backProp(const std::vector<double> &targetVals);
+    void backProp(const std::vector<double>& targetVals, double learning_rate);
     void getResults(std::vector<double>& resultVals);
 };
 

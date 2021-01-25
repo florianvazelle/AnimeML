@@ -27,13 +27,12 @@ public:
     void feedForward(const Layer &prevLayer);
     void calcOutputGradients(double targetVal);
     void calcHiddenGradients(const Layer &nextLayer);
-    void updateInputWeights(Layer &prevLayer);
+    void updateInputWeights(Layer& prevLayer, double learning_rate);
 
     std::vector<Connection> _outputWeights;
     unsigned _myIndex;
 
   private:
-    static double learningRate; // [0 -> 1] overall net training rate
     static double alpha; // [0 -> n] multiplier of last weight change (momentum)
     static double activationFunction(double x);
     static double activationFunctionDerivative(double x);

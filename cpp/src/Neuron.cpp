@@ -4,7 +4,6 @@
 #include <iostream>
 #include <algorithm>
 
-double Neuron::learningRate {0.15};
 double Neuron::alpha = {0.5};
 
 Neuron::Neuron(unsigned numOutputs, unsigned myIndex){
@@ -48,7 +47,7 @@ void Neuron::calcHiddenGradients(const Layer &nextLayer){
     _gradient = dow * Neuron::activationFunctionDerivative(_outputVal);
 }
 
-void Neuron::updateInputWeights(Layer &prevLayer){
+void Neuron::updateInputWeights(Layer& prevLayer, double learning_rate) {
     // The weights to be updated are in the Connection container
     // in the neurons in the preceding layer
     for (unsigned n = 0; n < prevLayer.size(); ++n) {
@@ -57,7 +56,7 @@ void Neuron::updateInputWeights(Layer &prevLayer){
         double oldDeltaWeight = neuron._outputWeights[_myIndex].deltaWeight; // ca merde
         double newDeltaWeight = 
             // Individual input. magnified by the gradient an train rate;
-            learningRate
+            learning_rate
             * neuron.getOutputVal()
             * _gradient
             // Also add momentum => a fraction of the previous delta weight

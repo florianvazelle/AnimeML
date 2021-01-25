@@ -116,7 +116,7 @@ void MLP::train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& trai
                 for (int k = 0; k < train_outputs.cols(); k++) {
                     matrixOutputsVector.push_back(train_outputs(trainingSetOrder[j],k));
                 }
-                backProp(matrixOutputsVector); // pwoblem
+                backProp(matrixOutputsVector, learning_rate); // pwoblem
             }
         }
     }
@@ -155,8 +155,7 @@ void MLP::feedForward(const std::vector<double> &inputVals){
     }
 }
 
-void MLP::backProp(const std::vector<double> &targetVals) {
-
+void MLP::backProp(const std::vector<double>& targetVals, double learning_rate) {
     // Calculate Overall net error (RMS of output neuron errors) "Root Mean Square Error" 
     Layer &outputLayer = _layers.back();
     _error = 0.0;
@@ -198,7 +197,7 @@ void MLP::backProp(const std::vector<double> &targetVals) {
         
         // Loop from the first neuron to the last
         for (unsigned n = 0; n < layer.size() - 1; ++n) {
-            layer[n].updateInputWeights(prevLayer);
+            layer[n].updateInputWeights(prevLayer, learning_rate);
         }
     }
 }
