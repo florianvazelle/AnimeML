@@ -45,18 +45,18 @@ public class Interface : MonoBehaviour {
         GUILayout.Label(picturePath);
         if(GUILayout.Button("Load Picture")) {
             picturePath = EditorUtility.OpenFilePanel("Overwrite with png", "", "png");
-            //LoadLibrary.LoadModel(picture, path);
         }
 
         GUILayout.Label(modelPath);
         if(GUILayout.Button("Load Model")) {
-            modelPath = EditorUtility.OpenFilePanel("Overwrite with csv", "", "csv");
-            //LoadLibrary.LoadModel(model, path);
+            modelPath = EditorUtility.OpenFilePanel("Overwrite with json", "", "json");
+            LoadLibrary.LoadModel(model, modelPath);
         }
 
-        if (GUILayout.Button("Compute")) {
-            // To do
+        if (GUILayout.Button("Compute") && picturePath != "") {
+            Debug.Log(LoadLibrary.PredictImage(model, picturePath));
         }
+
         GUILayout.Label("Result of the analyse (0 is Manga and 1 is BD) => " + result);
 
 
@@ -69,11 +69,13 @@ public class Interface : MonoBehaviour {
         learningRate = RGUI.Slider(learningRate, "Learning rate");
 
         if (GUILayout.Button("Create Model")) {
-            if (model != IntPtr.Zero) {
-                LoadLibrary.DeleteModel(model);
-            }
             if (modelType == ModelType.Linear) // MLP doesn't exist for now
-                model = LoadLibrary.CreateModel((int)modelType, 3, isClassification);
+                model = LoadLibrary.CreateModel(0, 3, IntPtr.Zero, 0, isClassification);
+            if (modelType == ModelType.MLP) { // MLP doesn't exist for now
+                double[] inputs = new double[3] { 3, 2, 1 };
+                IntPtr inputs_ptr = NeuralNetwork.ConvertManagedToUnmanaged(inputs);
+                model = LoadLibrary.CreateModel(1, 3, inputs_ptr, 3, isClassification);
+            }
         }
 
         // if (model != IntPtr.Zero) {

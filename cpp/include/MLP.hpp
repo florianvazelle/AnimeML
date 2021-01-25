@@ -19,8 +19,8 @@ class MLP : virtual public BaseModel {
     
     std::vector<Layer> _layers; // _Layers[layerNum][neuronNum]
 
-    void save(const char* path) const;
-    void load(const char* path);
+    void save(const char* path = "./model.json") const;
+    void load(const char* path = "./model.json");
 
   private:
     double _error = 0.0;

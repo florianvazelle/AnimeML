@@ -13,13 +13,16 @@ static Eigen::MatrixXd ConvertToEigenMatrix(const double* data, int x_dim, int y
  * @param flag Is the type of the model
  * @param weights_count Is the number of ...
  */
-DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, const unsigned* topology, int layers_count, bool is_classification) {
+DLLEXPORT BaseModel* CreateModel(int flag, int weights_count, const double* topology, int layers_count, bool is_classification) {
     switch (flag) {
         case 0:
             return new LinearModel(weights_count, is_classification);
         case 1:
             assert(weights_count == topology[0]);
-            std::vector<unsigned> dest(topology, topology + layers_count);
+            std::vector<unsigned> dest(layers_count);
+            for(int i = 0; i < layers_count; i++) {
+                dest[i] = (unsigned)topology[i];
+            }
 
             return new MLP(dest, weights_count, is_classification);
     }
@@ -94,6 +97,35 @@ DLLEXPORT void LoadModel(BaseModel* model, const char* path) { model->load(path)
  */
 DLLEXPORT void DeleteModel(BaseModel* model) { delete model; }
 
+DLLEXPORT int PredictImage(BaseModel* model, const char* path) {
+    ImageManager imageManager;
+    std::vector<double> predict_inputs;
+
+    // Create a model
+    const int inputs_size = 1024;
+
+    // hyper parameters
+    unsigned numHiddenLayers = 4;
+    unsigned numHiddenNeurons = 683;
+
+    std::vector<unsigned> topology;
+    topology.push_back(inputs_size);
+    for (unsigned i = 0; i < numHiddenLayers; i++) {
+        topology.push_back(numHiddenNeurons);
+    }
+    topology.push_back(1);
+
+    Eigen::MatrixXd predictInputMatrix, predictOutputMatrix;
+
+    imageManager.load(path, predict_inputs);
+    predictInputMatrix = ConvertToEigenMatrix(predict_inputs.data(), 1, inputs_size);
+    predictOutputMatrix = predictInputMatrix;  // just for the same size
+
+    model->predict(predictInputMatrix, predictOutputMatrix);
+
+    return predictOutputMatrix(0, 0);
+}
+
 // Load pictures and ouputs and pass them with pointers
 DLLEXPORT void LoadAsset(const char* path) {
     ImageManager imageManager;
@@ -126,7 +158,7 @@ DLLEXPORT void LoadAsset(const char* path) {
     std::cout << topology.back() << " };\n";
 
     MLP* model = new MLP(topology, 0, true);
-    // model->load("test_model.json");
+    model->load("test_model copy.json");
 
     Eigen::MatrixXd inputMatrix = ConvertToEigenMatrix(inputImagesPixels.data(), sample_count, inputs_size);
     Eigen::MatrixXd outputMatrix = ConvertToEigenMatrix(train_outputs.data(), sample_count, 1);

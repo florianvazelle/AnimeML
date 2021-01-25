@@ -26,41 +26,9 @@ public class NeuralNetwork : MonoBehaviour
     public int epochs = 10;
     public float learningRate = 0.5f;
 
-    private void Start() {
-        testLoadImageFolder();
-    }
-
-    private void testLoadImageFolder() {
-        
-        IntPtr inputImagesPixels = IntPtr.Zero;
-        IntPtr inputImagesPixels_size = IntPtr.Zero;
-        IntPtr outputs = IntPtr.Zero;
-        IntPtr outputs_size = IntPtr.Zero;
-
-        Debug.Log("Loading assets ...");
-        LoadLibrary.LoadAsset(inputImagesPixels, inputImagesPixels_size, outputs, outputs_size);
-
-        Debug.Log("End Loading");
-
-        if(inputImagesPixels_size != IntPtr.Zero) {
-            //DebugUnmanagedList(inputImagesPixels_size, 1);
-            DebugUnmanagedList(outputs_size, 1);
-        } else {
-            Debug.Log("null pointer");
-        }
-        
-        //DebugUnmanagedList(outputs_size, 1);
-
-        Marshal.FreeCoTaskMem(inputImagesPixels);
-        Marshal.FreeCoTaskMem(inputImagesPixels_size);
-        Marshal.FreeCoTaskMem(outputs);
-        Marshal.FreeCoTaskMem(outputs_size);
-        Debug.Log("Free Memory");
-    }
-
     private void linearModelPipeline() {
         // Init model
-        IntPtr model = LoadLibrary.CreateModel((int)Interface.ModelType.Linear, numInputs, true);
+        IntPtr model = LoadLibrary.CreateModel((int)Interface.ModelType.Linear, numInputs, IntPtr.Zero, 0, true);
 
         IntPtr inputs_ptr = ConvertManagedToUnmanaged(inputs);
         IntPtr outputs_ptr = ConvertManagedToUnmanaged(outputs);

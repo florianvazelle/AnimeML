@@ -6,7 +6,7 @@ public static class LoadLibrary
     /* For detail on all fields, check documentation on Library.cpp */
 
     [DllImport("example")]
-    public static extern IntPtr CreateModel(int flag, int weights_count, bool is_classification);
+    public static extern IntPtr CreateModel(int flag, int weights_count, IntPtr topology, int layer_count, bool is_classification);
 
     [DllImport("example")]
     public static extern void Train(
@@ -36,5 +36,8 @@ public static class LoadLibrary
     public static extern void DeleteModel(IntPtr model);
 
     [DllImport("example")]
-    public static extern void LoadAsset(IntPtr inputImagesPixels, IntPtr inputImagesPixels_size, IntPtr outputs, IntPtr outputs_size);
+    public static extern void LoadAsset(string path);
+
+    [DllImport("example")]
+    public static extern int PredictImage(IntPtr model, string path);
 }

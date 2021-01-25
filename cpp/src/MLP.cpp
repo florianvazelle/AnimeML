@@ -6,10 +6,6 @@
 MLP::MLP(const std::vector<unsigned> &topology, int weights_count, bool is_classification) : BaseModel(weights_count, is_classification) {
     // **************** not used *********************
     weights = new double[weights_count + 1];
-    // Init all weights and biases between -1.0 and 1.0
-    for (int i = 0; i < weights_count + 1; i++) {
-        weights[i] = ml::rand(-1, 1);
-    }
     // **************** end *********************
 
     unsigned int numLayers = (unsigned)topology.size();
@@ -45,10 +41,10 @@ void MLP::predict(const Eigen::MatrixXd& inputs, Eigen::MatrixXd& outputs){
         std::vector<double> res;
         getResults(res);
 
-        // std::cout << "res : " << std::endl;
+        // std::cout << "---------\n";
 
         for(auto p : res) {
-            std::cout << "Output Val: " << p << std::endl;
+            // std::cout << "Output Val: " << p << "\n";
         }
         
         for(int k = 0; k < res.size(); k++) {
@@ -85,7 +81,11 @@ void MLP::train(const Eigen::MatrixXd& train_inputs, const Eigen::MatrixXd& trai
 
         // Iterate with epochs
         for (int i = 0; i < epochs; i++) {
-            std::cout << "Turn : " << i << std::endl;
+            // std::cout << "Turn : " << i << "\n";
+            // if (i % 50 == 0) {
+            //     save("test_model.json");
+            //     std::cout << "Save.." << "\n";
+            // }
             //predict(train_inputs, activation);
 
             // shuffle the training set

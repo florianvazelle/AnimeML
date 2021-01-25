@@ -17,7 +17,7 @@
 
 // This file is the test cases of the teacher
 
-static auto seed = unsigned(std::time(0)); // time(0) is time of runtime execution
+static auto seed = double(std::time(0)); // time(0) is time of runtime execution
 
 // To shuffle in the same order at each runtime
 static void _no_random_shuffle(std::vector<double>& vec) {
@@ -28,7 +28,7 @@ static void _no_random_shuffle(std::vector<double>& vec) {
 // This function create a model, train it and compare its results with the original results and see if it's equivalent
 // It need training In/out and different predict In/out to see if it is still a good model with unknown data
 static bool CheckModel(const int flag,
-                       const std::vector<unsigned>& weights,
+                       const std::vector<double>& weights,
                        const bool is_classification,
                        const int train_sample_count,
                        const int predict_sample_count,
@@ -68,7 +68,7 @@ static bool CheckModel(const int flag,
 
         valid = valid && ml::double_equals(value, predict_outputs[i]);
         // if (!ml::double_equals(value, predict_outputs[i])) {
-            std::cout << std::setprecision(5) << results[i] << " == " << std::setprecision(5) << predict_outputs[i] << "\n";
+            // std::cout << std::setprecision(5) << results[i] << " == " << std::setprecision(5) << predict_outputs[i] << "\n";
         // }
     }
 
@@ -79,7 +79,7 @@ static bool CheckModel(const int flag,
 
 // Check if a model is good with the same In/Out as his training In/Out
 static bool CheckModelWithSameTrainPredict(const int flag,
-                                           const std::vector<unsigned>& weights,
+                                           const std::vector<double>& weights,
                                            const bool is_classification,
                                            const int sample_count,
                                            const std::vector<double>& inputs,
@@ -91,7 +91,7 @@ static bool CheckModelWithSameTrainPredict(const int flag,
 
 // Split samples to create known data and unknown data and check the model
 static bool CheckModelWithSplitTrainPredict(const int flag,
-                                            const std::vector<unsigned>& weights,
+                                            const std::vector<double>& weights,
                                             const bool is_classification,
                                             const int sample_count,
                                             const int predict_sample_count,
@@ -113,7 +113,7 @@ static bool CheckModelWithSplitTrainPredict(const int flag,
 }
 
 // Linear model with defined samples
-static void LinearSimple(int flag, const std::vector<unsigned>& weights) {
+static void LinearSimple(int flag, const std::vector<double>& weights) {
     const int sample_count = 3;
 
     std::vector<double> inputs({
@@ -127,11 +127,11 @@ static void LinearSimple(int flag, const std::vector<unsigned>& weights) {
         -1   // 3th // -1
     });
 
-    CHECK(CheckModelWithSameTrainPredict(flag, weights, true, sample_count, inputs, outputs, 1000, 0.5));
+    CHECK(CheckModelWithSameTrainPredict(flag, weights, true, sample_count, inputs, outputs, 1000, 0.15));
 }
 
 // Linear model with generated samples
-static void LinearMultiple(int flag, const std::vector<unsigned>& weights) {
+static void LinearMultiple(int flag, const std::vector<double>& weights) {
     const int sample_count = 100;
 
     std::vector<double> inputs(200);
@@ -144,16 +144,16 @@ static void LinearMultiple(int flag, const std::vector<unsigned>& weights) {
 }
 
 // Xor test
-static void XOR(int flag, const std::vector<unsigned>& weights) {
+static void XOR(int flag, const std::vector<double>& weights) {
     const int sample_count = 4;
 
     std::vector<double> inputs({1, 0, 0, 1, 0, 0, 1, 1});
     std::vector<double> outputs({1, 1, -1, -1});
 
-    CHECK(CheckModelWithSameTrainPredict(flag, weights, true, sample_count, inputs, outputs));
+    CHECK(CheckModelWithSameTrainPredict(flag, weights, true, sample_count, inputs, outputs, 1000, 0.15));
 }
 
-static void Cross(int flag, const std::vector<unsigned>& weights) {
+static void Cross(int flag, const std::vector<double>& weights) {
     const int sample_count = 500;
 
     std::vector<double> inputs(1000);
@@ -168,7 +168,7 @@ static void Cross(int flag, const std::vector<unsigned>& weights) {
     CHECK(CheckModelWithSameTrainPredict(flag, weights, true, sample_count, inputs, outputs));
 }
 
-static void MultiLinear3Classes(int flag, const std::vector<unsigned>& weights) {
+static void MultiLinear3Classes(int flag, const std::vector<double>& weights) {
     const int sample_count = 500;
 
     std::vector<double> inputs(1000);
@@ -194,7 +194,7 @@ static void MultiLinear3Classes(int flag, const std::vector<unsigned>& weights) 
     CHECK(CheckModelWithSameTrainPredict(flag, weights, true, sample_count, inputs, outputs));
 }
 
-static void MultiCross(int flag, const std::vector<unsigned>& weights) {
+static void MultiCross(int flag, const std::vector<double>& weights) {
     const int sample_count = 1000;
 
     std::vector<double> inputs(2000);
@@ -217,24 +217,24 @@ static void MultiCross(int flag, const std::vector<unsigned>& weights) {
     CHECK(CheckModelWithSameTrainPredict(flag, weights, true, sample_count, inputs, outputs));
 }
 
-// TEST_CASE("Classification") {
-//     SUBCASE("Linear Model") {
-//         SUBCASE("Linear Simple") { LinearSimple(0, {}); }
-//         SUBCASE("Linear Multiple") { LinearMultiple(0, {}); }
-//         // SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(0); }
-//     }
+TEST_CASE("Classification") {
+    SUBCASE("Linear Model") {
+        SUBCASE("Linear Simple") { LinearSimple(0, {}); }
+        SUBCASE("Linear Multiple") { LinearMultiple(0, {}); }
+        // SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(0); }
+    }
 
-//     SUBCASE("Multi Layer Perceptron") {
-//         SUBCASE("Linear Simple") { LinearSimple(1, {2, 1}); }
-//         SUBCASE("Linear Multiple") { LinearMultiple(1, {2, 1}); }
-//         SUBCASE("XOR") { XOR(1, {2, 2, 1}); }
-//         SUBCASE("Cross") { Cross(1, {2, 4, 1}); }
-//         SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(1, {2, 3}); }
-//         SUBCASE("Multi Cross") { MultiCross(1, {2, 4, 4, 3}); }
-//     }
-// }
+    SUBCASE("Multi Layer Perceptron") {
+        SUBCASE("Linear Simple") { LinearSimple(1, {2, 1}); }
+        SUBCASE("Linear Multiple") { LinearMultiple(1, {2, 1}); }
+        SUBCASE("XOR") { XOR(1, {2, 2, 2, 1}); }
+        // SUBCASE("Cross") { Cross(1, {2, 4, 3, 1}); }
+        // SUBCASE("Multi Linear 3 classes") { MultiLinear3Classes(1, {2, 3}); }
+        // SUBCASE("Multi Cross") { MultiCross(1, {2, 4, 4, 3}); }
+    }
+}
 
-static void LinearSimple2D(int flag, const std::vector<unsigned>& weights) {
+static void LinearSimple2D(int flag, const std::vector<double>& weights) {
     const int sample_count = 2;
 
     std::vector<double> inputs({1, 2});
@@ -243,7 +243,7 @@ static void LinearSimple2D(int flag, const std::vector<unsigned>& weights) {
     CHECK(CheckModelWithSameTrainPredict(flag, weights, false, sample_count, inputs, outputs));
 }
 
-static void NonLinearSimple2D(int flag, const std::vector<unsigned>& weights) {
+static void NonLinearSimple2D(int flag, const std::vector<double>& weights) {
     const int sample_count = 3;
 
     std::vector<double> inputs({1, 2, 3});
@@ -252,7 +252,7 @@ static void NonLinearSimple2D(int flag, const std::vector<unsigned>& weights) {
     CHECK(CheckModelWithSameTrainPredict(flag, weights, false, sample_count, inputs, outputs));
 }
 
-static void LinearSimple3D(int flag, const std::vector<unsigned>& weights) {
+static void LinearSimple3D(int flag, const std::vector<double>& weights) {
     const int sample_count = 3;
 
     std::vector<double> inputs({1, 1, 2, 2, 3, 1});
@@ -261,7 +261,7 @@ static void LinearSimple3D(int flag, const std::vector<unsigned>& weights) {
     CHECK(CheckModelWithSameTrainPredict(flag, weights, false, sample_count, inputs, outputs));
 }
 
-static void LinearTricky3D(int flag, const std::vector<unsigned>& weights) {
+static void LinearTricky3D(int flag, const std::vector<double>& weights) {
     const int sample_count = 3;
 
     std::vector<double> inputs({1, 1, 2, 2, 3, 3});
@@ -270,7 +270,7 @@ static void LinearTricky3D(int flag, const std::vector<unsigned>& weights) {
     CHECK(CheckModelWithSameTrainPredict(flag, weights, false, sample_count, inputs, outputs));
 }
 
-static void NonLinearSimple3D(int flag, const std::vector<unsigned>& weights) {
+static void NonLinearSimple3D(int flag, const std::vector<double>& weights) {
     const int sample_count = 4;
 
     std::vector<double> inputs({1, 0, 0, 1, 1, 1, 0, 0});
@@ -279,25 +279,25 @@ static void NonLinearSimple3D(int flag, const std::vector<unsigned>& weights) {
     CHECK(CheckModelWithSameTrainPredict(flag, weights, false, sample_count, inputs, outputs));
 }
 
-// TEST_CASE("Regression") {
-//     SUBCASE("Linear Model") {
-//         SUBCASE("Linear Simple 2D") { LinearSimple2D(0, {}); }
-//         SUBCASE("Linear Simple 3D") { LinearSimple3D(0, {}); }
-//         SUBCASE("Linear Tricky 3D") { LinearTricky3D(0, {}); }
-//     }
+TEST_CASE("Regression") {
+    SUBCASE("Linear Model") {
+        SUBCASE("Linear Simple 2D") { LinearSimple2D(0, {}); }
+        SUBCASE("Linear Simple 3D") { LinearSimple3D(0, {}); }
+        SUBCASE("Linear Tricky 3D") { LinearTricky3D(0, {}); }
+    }
 
-//     SUBCASE("Multi Layer Perceptron") {
-//         SUBCASE("Linear Simple 2D") { LinearSimple2D(1); }
-//         SUBCASE("Non Linear Simple 2D") { NonLinearSimple2D(1); }
-//         SUBCASE("Linear Simple 3D") { LinearSimple3D(1); }
-//         SUBCASE("Linear Tricky 3D") { LinearTricky3D(1); }
-//         SUBCASE("Non Linear Simple 3D") { NonLinearSimple3D(1); }
-//     }
-// }
+    // SUBCASE("Multi Layer Perceptron") {
+    //     SUBCASE("Linear Simple 2D") { LinearSimple2D(1); }
+    //     SUBCASE("Non Linear Simple 2D") { NonLinearSimple2D(1); }
+    //     SUBCASE("Linear Simple 3D") { LinearSimple3D(1); }
+    //     SUBCASE("Linear Tricky 3D") { LinearTricky3D(1); }
+    //     SUBCASE("Non Linear Simple 3D") { NonLinearSimple3D(1); }
+    // }
+}
 
-TEST_CASE("MLP") {
+// TEST_CASE("MLP") {
     // SUBCASE("Linear Simple MLP") { LinearSimple(1); }
     // SUBCASE("Load Image") { LoadAsset(DATA_PATH "/BDFULL/BD 000.png"); }
     // SUBCASE("Load Image") { LoadAsset(DATA_PATH "/AnimeFULL/Anime 000.png"); }
-    SUBCASE("Load Image") { LoadAsset(); }
-}
+    // SUBCASE("Load Image") { LoadAsset(); }
+// }

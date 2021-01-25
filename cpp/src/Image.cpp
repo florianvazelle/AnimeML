@@ -16,7 +16,7 @@ Image::Image(char const* filename) {
             int j = 4 * i;
             // https://gigi.nullneuron.net/gigilabs/converting-an-image-to-grayscale-using-sdl2/
             float color = (0.212671f * pixels[j + 3] + 0.715160f * pixels[j + 2] + 0.072169f * pixels[j + 1]) / 255.0f;
-            m_pixels[i] = static_cast<double>(color);
+            m_pixels[i] = 2 * static_cast<double>(color) - 1;
         }
 
         stbi_image_free(pixels);
