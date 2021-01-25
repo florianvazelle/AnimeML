@@ -261,28 +261,28 @@ void MLP::load(const char* path) {
     assert(document.IsObject());
     assert(document.HasMember("layers"));
 
-    const Value& jsonLayers = document["layers"];  // Using a reference for consecutive access is handy and faster.
-    assert(jsonLayers.IsArray());
+    const Value& allLayers = document["layers"];  // Using a reference for consecutive access is handy and faster.
+    assert(allLayers.IsArray());
 
     Layer layer;
-    for (auto& l : jsonLayers.GetArray()) {
-        if (l.IsObject()) {
-            const Value& n = l["outputWeights"];
+    for (auto& l : allLayers.GetArray()) {
+        for (auto& n : l.GetArray()) {
+            if (n.IsObject()) {
+                Neuron neuron(0, n["idx"].GetUint());
 
-            Neuron neuron(0, l["idx"].GetUint());
-            for (auto& c : n.GetArray()) {
-                Connection connection;
-                for (auto& w : c.GetArray()) {
-                    if (w.IsObject()) {
-                        connection.weight = w["weight"].GetDouble();
-                        connection.deltaWeight = w["deltaWeight"].GetDouble();
+                const Value& outputWeights = n["outputWeights"];
+                for (auto& c : outputWeights.GetArray()) {
+                    Connection connection;
+                    if (c.IsObject()) {
+                        connection.weight = c["weight"].GetDouble();
+                        connection.deltaWeight = c["deltaWeight"].GetDouble();
                     }
+
+                    neuron._outputWeights.push_back(connection);
                 }
 
-                neuron._outputWeights.push_back(connection);
+                layer.push_back(neuron);
             }
-
-            layer.push_back(neuron);
         }
     }
 
