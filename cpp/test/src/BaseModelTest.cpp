@@ -48,6 +48,8 @@ TEST_CASE("Save/Load") {
     MLP model2 = MLP(topology, weights_count, true);
     model2.load("test_model.csv");
 
+    CHECK(model2._layers.size() == model2._layers.size());
+
     i = 0;
     for (Layer& layer : model2._layers) {
         for (Neuron& neuron : layer) {

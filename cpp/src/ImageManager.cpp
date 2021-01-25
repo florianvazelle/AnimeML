@@ -24,6 +24,14 @@ void ImageManager::getFilesInDirectory(std::vector<std::string>& out, const std:
     }
 }
 
+void ImageManager::load(const char* path, std::vector<double>& pixels) const {
+    Image img(path);
+    img.resize(width, height);
+
+    pixels.insert(pixels.end(), img.begin(), img.end());
+}
+
+
 void ImageManager::loadAsset(std::vector<double>& input_images, std::vector<double>& outputs) const {
     // load all anime path
     std::vector<std::string> anime_images_path;
@@ -35,7 +43,6 @@ void ImageManager::loadAsset(std::vector<double>& input_images, std::vector<doub
 
         input_images.insert(input_images.end(), img.begin(), img.end());
         outputs.push_back(isAnime);
-        std::cout << "isAnime : " << isAnime << std::endl; // Debug
     }
 
     // load all BD image
@@ -48,6 +55,5 @@ void ImageManager::loadAsset(std::vector<double>& input_images, std::vector<doub
 
         input_images.insert(input_images.end(), img.begin(), img.end());
         outputs.push_back(isBD);
-        std::cout << "isBD : " << isBD << std::endl; // Debug
     }
 }

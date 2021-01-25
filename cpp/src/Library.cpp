@@ -95,17 +95,17 @@ DLLEXPORT void LoadModel(BaseModel* model, const char* path) { model->load(path)
 DLLEXPORT void DeleteModel(BaseModel* model) { delete model; }
 
 // Load pictures and ouputs and pass them with pointers
-DLLEXPORT void LoadAsset() {
+DLLEXPORT void LoadAsset(const char* path) {
     ImageManager imageManager;
-    std::vector<double> inputImagesPixels;
-    std::vector<double> outputs;
+    std::vector<double> inputImagesPixels, predict_inputs;
+    std::vector<double> train_outputs, predict_outputs;
 
     // Load assets
-    imageManager.loadAsset(inputImagesPixels, outputs);
+    imageManager.loadAsset(inputImagesPixels, train_outputs);
 
     // Create a model
-    const int sample_count = outputs.size();
-    const int inputs_size = (int)(inputImagesPixels.size() / outputs.size());
+    const int sample_count = train_outputs.size();
+    const int inputs_size = (int)(inputImagesPixels.size() / train_outputs.size());
 
     // hyper parameters
     unsigned numHiddenLayers = 4;
@@ -126,15 +126,30 @@ DLLEXPORT void LoadAsset() {
     std::cout << topology.back() << " };\n";
 
     MLP* model = new MLP(topology, 0, true);
+    // model->load("test_model.json");
 
     Eigen::MatrixXd inputMatrix = ConvertToEigenMatrix(inputImagesPixels.data(), sample_count, inputs_size);
-    Eigen::MatrixXd outputMatrix = ConvertToEigenMatrix(outputs.data(), sample_count, 1);
+    Eigen::MatrixXd outputMatrix = ConvertToEigenMatrix(train_outputs.data(), sample_count, 1);
 
     std::cout << "sample_count : " << sample_count << "\n";
     std::cout << "inputs_size : " << inputs_size << "\n";
 
-    // model->train(inputMatrix, outputMatrix, 10, 0.5);
-    model->predict(inputMatrix, outputMatrix);
+    model->train(inputMatrix, outputMatrix, 1000, 0.1);
+
+    // ****** Predict ******
+
+    Eigen::MatrixXd predictInputMatrix, predictOutputMatrix;
+
+    if (strcmp(path, "") != 0) {
+        imageManager.load(path, predict_inputs);
+        predictInputMatrix = ConvertToEigenMatrix(predict_inputs.data(), 1, inputs_size);
+        predictOutputMatrix = predictInputMatrix; // just for the same size
+    } else {
+        predictInputMatrix = inputMatrix;
+        predictOutputMatrix = outputMatrix;
+    }
+
+    model->predict(predictInputMatrix, predictOutputMatrix);
 
     DeleteModel(model);
 }

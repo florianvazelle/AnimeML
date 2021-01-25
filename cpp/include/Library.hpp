@@ -30,7 +30,7 @@ extern "C"
     DLLEXPORT void SaveModel(BaseModel* model, const char* path);
     DLLEXPORT void LoadModel(BaseModel* model, const char* path);
     DLLEXPORT void DeleteModel(BaseModel* model);
-    DLLEXPORT void LoadAsset();
+    DLLEXPORT void LoadAsset(const char* path = "");
 };
 
 #endif

@@ -13,6 +13,7 @@ class ImageManager {
     ImageManager(int size) : width(size), height(size) {}
     ImageManager(int width, int height) : width(width), height(height) {}
 
+    void load(const char* path, std::vector<double>& pixels) const;
     void loadAsset(std::vector<double>& input_images, std::vector<double>& outputs) const;
     static void getFilesInDirectory(std::vector<std::string>& out, const std::string& directory);
 

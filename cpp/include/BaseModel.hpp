@@ -18,8 +18,8 @@ class BaseModel {
 
     // npl is an array of number of weight by layer (for example: npl = [4, 3, 3,
     // 2], the first layer have 4 weigth, the second have 3 weight ...)
-    void save(const char* path = "./model.csv") const;
-    void load(const char* path = "./model.csv");
+    virtual void save(const char* path = "./model.csv") const;
+    virtual void load(const char* path = "./model.csv");
 
   protected:
     double* weights;
